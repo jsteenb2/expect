@@ -8,10 +8,10 @@ import (
 	"github.com/jsteenb2/expect"
 )
 
-const subjectName = "file system"
+const fsSubjectName = "file system"
 
-// HaveFileCalled checks if a file exists in the file system, and can run additional matchers on its contents.
-func HaveFileCalled(name string, contentMatcher ...expect.Matcher[string]) expect.Matcher[fs.FS] {
+// FileNamed checks if a file exists in the file system, and can run additional matchers on its contents.
+func FileNamed(name string, contentMatcher ...expect.Matcher[string]) expect.Matcher[fs.FS] {
 	return func(fileSystem fs.FS) expect.MatchResult {
 		file, err := fileSystem.Open(name)
 		
@@ -20,7 +20,7 @@ func HaveFileCalled(name string, contentMatcher ...expect.Matcher[string]) expec
 				Description: "have file called " + name,
 				Matches:     false,
 				But:         "it did not",
-				SubjectName: subjectName,
+				SubjectName: fsSubjectName,
 			}
 		}
 		
@@ -33,7 +33,7 @@ func HaveFileCalled(name string, contentMatcher ...expect.Matcher[string]) expec
 					Description: "have file called " + name,
 					Matches:     false,
 					But:         "it could not be read",
-					SubjectName: subjectName,
+					SubjectName: fsSubjectName,
 				}
 			}
 			contents := string(all)
@@ -49,19 +49,19 @@ func HaveFileCalled(name string, contentMatcher ...expect.Matcher[string]) expec
 		return expect.MatchResult{
 			Description: "have file called " + name,
 			Matches:     true,
-			SubjectName: subjectName,
+			SubjectName: fsSubjectName,
 		}
 	}
 }
 
-// HaveDir checks if a directory exists in the file system.
-func HaveDir(name string) expect.Matcher[fs.FS] {
+// Dir checks if a directory exists in the file system.
+func Dir(name string) expect.Matcher[fs.FS] {
 	return func(fileSystem fs.FS) expect.MatchResult {
 		f, err := fileSystem.Open(name)
 		
 		result := expect.MatchResult{
 			Description: fmt.Sprintf("have directory called %q", name),
-			SubjectName: subjectName,
+			SubjectName: fsSubjectName,
 			Matches:     true,
 		}
 		

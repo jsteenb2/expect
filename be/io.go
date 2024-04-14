@@ -47,7 +47,7 @@ func HaveData(matcher expect.Matcher[[]byte]) expect.Matcher[io.Reader] {
 	}
 }
 
-func HaveString(matcher expect.Matcher[string]) expect.Matcher[io.Reader] {
+func String(matcher expect.Matcher[string]) expect.Matcher[io.Reader] {
 	return func(reader io.Reader) expect.MatchResult {
 		all, err := io.ReadAll(reader)
 		if err != nil {

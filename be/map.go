@@ -6,8 +6,8 @@ import (
 	"github.com/jsteenb2/expect"
 )
 
-// HaveKey checks if a map has a key with a specific value.
-func HaveKey[K comparable, V any](key K, valueMatcher expect.Matcher[V]) expect.Matcher[map[K]V] {
+// Key checks if a map has a key with a specific value.
+func Key[K comparable, V any](key K, valueMatcher expect.Matcher[V]) expect.Matcher[map[K]V] {
 	return func(m map[K]V) expect.MatchResult {
 		value, exists := m[key]
 		
@@ -25,9 +25,7 @@ func HaveKey[K comparable, V any](key K, valueMatcher expect.Matcher[V]) expect.
 // WithAnyValue lets you match any value, useful if you're just looking for the presence of a key.
 func WithAnyValue[T any]() expect.Matcher[T] {
 	return func(T) expect.MatchResult {
-		return expect.MatchResult{
-			Matches: true,
-		}
+		return expect.MatchResult{Matches: true}
 	}
 }
 

@@ -11,7 +11,7 @@ import (
 	"github.com/jsteenb2/expect/spytb"
 )
 
-func ExampleHaveFileCalled_fail() {
+func ExampleFileNamed_fail() {
 	t := &expect.SpyTB{}
 	stubFS := fstest.MapFS{
 		"someFile.txt": {
@@ -19,13 +19,13 @@ func ExampleHaveFileCalled_fail() {
 		},
 	}
 	
-	expect.Expect[fs.FS](t, stubFS).To(be.HaveFileCalled("someFile.txt", be.HaveSubstring("Pluto")))
+	expect.It[fs.FS](t, stubFS).To(be.FileNamed("someFile.txt", be.Substring("Pluto")))
 	
 	fmt.Println(t.Result())
 	// Output: Test failed: [expected file called someFile.txt to contain "Pluto"]
 }
 
-func ExampleHaveFileCalled() {
+func ExampleFileNamed() {
 	t := &expect.SpyTB{}
 	stubFS := fstest.MapFS{
 		"someFile.txt": {
@@ -33,13 +33,13 @@ func ExampleHaveFileCalled() {
 		},
 	}
 	
-	expect.Expect[fs.FS](t, stubFS).To(be.HaveFileCalled("someFile.txt"))
+	expect.It[fs.FS](t, stubFS).To(be.FileNamed("someFile.txt"))
 	
 	fmt.Println(t.Result())
 	// Output: Test passed
 }
 
-func ExampleHaveDir() {
+func ExampleDir() {
 	t := &expect.SpyTB{}
 	stubFS := fstest.MapFS{
 		"someDir": {
@@ -47,13 +47,13 @@ func ExampleHaveDir() {
 		},
 	}
 	
-	expect.Expect[fs.FS](t, stubFS).To(be.HaveDir("someDir"))
+	expect.It[fs.FS](t, stubFS).To(be.Dir("someDir"))
 	
 	fmt.Println(t.Result())
 	// Output: Test passed
 }
 
-func ExampleHaveDir_fail() {
+func ExampleDir_fail() {
 	t := &expect.SpyTB{}
 	stubFS := fstest.MapFS{
 		"someFile.txt": {
@@ -61,7 +61,7 @@ func ExampleHaveDir_fail() {
 		},
 	}
 	
-	expect.Expect[fs.FS](t, stubFS).To(be.HaveDir("someFile.txt"))
+	expect.It[fs.FS](t, stubFS).To(be.Dir("someFile.txt"))
 	
 	fmt.Println(t.Result())
 	// Output: Test failed: [expected file system to have directory called "someFile.txt", but it was not a directory]
@@ -82,20 +82,20 @@ func TestFSMatching(t *testing.T) {
 	
 	t.Run("HasDir", func(t *testing.T) {
 		t.Run("passing", func(t *testing.T) {
-			expect.Expect[fs.FS](t, stubFS).To(be.HaveDir("someDir"))
+			expect.It[fs.FS](t, stubFS).To(be.Dir("someDir"))
 		})
 		
 		t.Run("failing", func(t *testing.T) {
 			spytb.VerifyFailingMatcher[fs.FS](
 				t,
 				stubFS,
-				be.HaveDir("someFile.txt"),
+				be.Dir("someFile.txt"),
 				`expected file system to have directory called "someFile.txt", but it was not a directory`,
 			)
 			spytb.VerifyFailingMatcher[fs.FS](
 				t,
 				stubFS,
-				be.HaveDir("non-existent-file"),
+				be.Dir("non-existent-file"),
 				`expected file system to have directory called "non-existent-file", but it did not`,
 			)
 			t.Run("failing filesystem", func(t *testing.T) {
@@ -103,7 +103,7 @@ func TestFSMatching(t *testing.T) {
 				spytb.VerifyFailingMatcher[fs.FS](
 					t,
 					failingFS,
-					be.HaveDir("someDir"),
+					be.Dir("someDir"),
 					`expected file system to have directory called "someDir", but it could not be read`,
 				)
 			})
@@ -113,14 +113,14 @@ func TestFSMatching(t *testing.T) {
 	t.Run("FileContains", func(t *testing.T) {
 		t.Run("file existence check", func(t *testing.T) {
 			t.Run("passing", func(t *testing.T) {
-				expect.Expect[fs.FS](t, stubFS).To(be.HaveFileCalled("someFile.txt"))
-				expect.Expect[fs.FS](t, stubFS).To(be.HaveFileCalled("nested/someFile.txt"))
+				expect.It[fs.FS](t, stubFS).To(be.FileNamed("someFile.txt"))
+				expect.It[fs.FS](t, stubFS).To(be.FileNamed("nested/someFile.txt"))
 			})
 			t.Run("failing", func(t *testing.T) {
 				spytb.VerifyFailingMatcher[fs.FS](
 					t,
 					stubFS,
-					be.HaveFileCalled("non-existent-file"),
+					be.FileNamed("non-existent-file"),
 					`expected file system to have file called non-existent-file, but it did not`,
 				)
 			})
@@ -129,14 +129,14 @@ func TestFSMatching(t *testing.T) {
 	
 	t.Run("FileContains with contents", func(t *testing.T) {
 		t.Run("passing", func(t *testing.T) {
-			expect.Expect[fs.FS](t, stubFS).To(be.HaveFileCalled("someFile.txt", be.HaveSubstring("world")))
+			expect.It[fs.FS](t, stubFS).To(be.FileNamed("someFile.txt", be.Substring("world")))
 		})
 		
 		t.Run("failing", func(t *testing.T) {
 			spytb.VerifyFailingMatcher[fs.FS](
 				t,
 				stubFS,
-				be.HaveFileCalled("someFile.txt", be.HaveSubstring("goodbye")),
+				be.FileNamed("someFile.txt", be.Substring("goodbye")),
 				`expected file called someFile.txt to contain "goodbye"`,
 			)
 			
@@ -145,7 +145,7 @@ func TestFSMatching(t *testing.T) {
 				spytb.VerifyFailingMatcher[fs.FS](
 					t,
 					failingFS,
-					be.HaveFileCalled("anotherFile.txt", be.HaveSubstring("BLAH")),
+					be.FileNamed("anotherFile.txt", be.Substring("BLAH")),
 					"expected file system to have file called anotherFile.txt, but it could not be read",
 				)
 			})

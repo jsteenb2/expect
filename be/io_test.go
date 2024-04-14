@@ -18,7 +18,7 @@ func ExampleContainingByte() {
 	buf.WriteString("hello")
 	buf.WriteString("world")
 	
-	expect.Expect[io.Reader](t, buf).To(be.HaveData(
+	expect.It[io.Reader](t, buf).To(be.HaveData(
 		be.ContainingByte([]byte("hello")).And(be.ContainingByte([]byte("world"))),
 	))
 	fmt.Println(t.Result())
@@ -32,7 +32,7 @@ func ExampleContainingByte_fail() {
 	buf.WriteString("hello")
 	buf.WriteString("world")
 	
-	expect.Expect[io.Reader](t, buf).To(be.HaveData(
+	expect.It[io.Reader](t, buf).To(be.HaveData(
 		be.ContainingByte([]byte("goodbye")),
 	))
 	fmt.Println(t.Result())
@@ -46,7 +46,7 @@ func ExampleContainingString() {
 	buf.WriteString("hello")
 	buf.WriteString("world")
 	
-	expect.Expect[io.Reader](t, buf).To(be.HaveData(
+	expect.It[io.Reader](t, buf).To(be.HaveData(
 		be.ContainingString("world"),
 	))
 	fmt.Println(t.Result())
@@ -60,7 +60,7 @@ func ExampleContainingString_fail() {
 	buf.WriteString("hello")
 	buf.WriteString("world")
 	
-	expect.Expect[io.Reader](t, buf).To(be.HaveData(
+	expect.It[io.Reader](t, buf).To(be.HaveData(
 		be.ContainingString("goodbye"),
 	))
 	fmt.Println(t.Result())
@@ -73,7 +73,7 @@ func ExampleHaveString() {
 	buf := &bytes.Buffer{}
 	buf.WriteString("hello")
 	buf.WriteString("world")
-	expect.Expect[io.Reader](t, buf).To(be.HaveString(be.Eq("helloworld")))
+	expect.It[io.Reader](t, buf).To(be.String(be.Eq("helloworld")))
 	fmt.Println(t.Result())
 	// Output: Test passed
 }
@@ -83,7 +83,7 @@ func ExampleHaveString_fail() {
 	buf := &bytes.Buffer{}
 	buf.WriteString("hello")
 	buf.WriteString("world")
-	expect.Expect[io.Reader](t, buf).To(be.HaveString(be.Eq("Poo")))
+	expect.It[io.Reader](t, buf).To(be.String(be.Eq("Poo")))
 	fmt.Println(t.Result())
 	// Output: Test failed: [expected "helloworld" to be equal to "Poo", but it was "helloworld"]
 }
@@ -94,12 +94,12 @@ func TestIOMatchers(t *testing.T) {
 		buf.WriteString("hello")
 		buf.WriteString("world")
 		
-		expect.Expect[io.Reader](t, buf).To(be.HaveData(
+		expect.It[io.Reader](t, buf).To(be.HaveData(
 			be.ContainingByte([]byte("hello")).And(be.ContainingByte([]byte("world"))),
 		))
 		
 		buf.WriteString("goodbye")
-		expect.Expect[io.Reader](t, buf).To(be.HaveData(
+		expect.It[io.Reader](t, buf).To(be.HaveData(
 			be.ContainingString("goodbye"),
 		))
 	})

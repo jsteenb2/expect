@@ -9,55 +9,55 @@ import (
 	"github.com/jsteenb2/expect/spytb"
 )
 
-func ExampleHaveAllCaps() {
+func ExampleAllCaps() {
 	t := &expect.SpyTB{}
 	
-	expect.Expect(t, "HELLO").To(be.HaveAllCaps)
+	expect.It(t, "HELLO").To(be.AllCaps)
 	
 	fmt.Println(t.Result())
 	// Output: Test passed
 }
 
-func ExampleHaveAllCaps_fail() {
+func ExampleAllCaps_fail() {
 	t := &expect.SpyTB{}
 	
-	expect.Expect(t, "hello").To(be.HaveAllCaps)
+	expect.It(t, "hello").To(be.AllCaps)
 	
 	fmt.Println(t.Result())
 	// Output: Test failed: [expected hello to in all caps, but it was not in all caps]
 }
 
-func ExampleHaveLength() {
+func ExampleLen() {
 	t := &expect.SpyTB{}
 	
-	expect.Expect(t, "hello").To(be.HaveLength(be.Eq(5)))
+	expect.It(t, "hello").To(be.Len(be.Eq(5)))
 	
 	fmt.Println(t.Result())
 	// Output: Test passed
 }
 
-func ExampleHaveLength_fail() {
+func ExampleLen_fail() {
 	t := &expect.SpyTB{}
 	
-	expect.Expect(t, "hello").To(be.HaveLength(be.Eq(4)))
+	expect.It(t, "hello").To(be.Len(be.Eq(4)))
 	
 	fmt.Println(t.Result())
 	// Output: Test failed: [expected hello to have length be equal to 4, but it was 5]
 }
 
-func ExampleHaveSubstring() {
+func ExampleSubstring() {
 	t := &expect.SpyTB{}
 	
-	expect.Expect(t, "hello").To(be.HaveSubstring("ell"))
+	expect.It(t, "hello").To(be.Substring("ell"))
 	
 	fmt.Println(t.Result())
 	// Output: Test passed
 }
 
-func ExampleHaveSubstring_fail() {
+func ExampleSubstring_fail() {
 	t := &expect.SpyTB{}
 	
-	expect.Expect(t, "hello").To(be.HaveSubstring("goodbye"))
+	expect.It(t, "hello").To(be.Substring("goodbye"))
 	
 	fmt.Println(t.Result())
 	// Output: Test failed: [expected hello to contain "goodbye"]
@@ -66,11 +66,11 @@ func ExampleHaveSubstring_fail() {
 func Example() {
 	t := &expect.SpyTB{}
 	
-	expect.Expect(t, "hello").To(
-		be.HaveLength(be.Eq(5)),
+	expect.It(t, "hello").To(
+		be.Len(be.Eq(5)),
 		be.Eq("hello"),
-		be.HaveSubstring("ell"),
-		expect.Doesnt(be.HaveAllCaps),
+		be.Substring("ell"),
+		be.Not(be.AllCaps),
 	)
 	
 	fmt.Println(t.Result())
@@ -79,13 +79,13 @@ func Example() {
 func TestStringMatchers(t *testing.T) {
 	t.Run("Have length", func(t *testing.T) {
 		t.Run("passing", func(t *testing.T) {
-			expect.Expect(t, "hello").To(be.HaveLength(be.Eq(5)))
+			expect.It(t, "hello").To(be.Len(be.Eq(5)))
 		})
 		
 		t.Run("failing", func(t *testing.T) {
 			spyTB := &expect.SpyTB{}
-			expect.Expect(spyTB, "goodbye").To(be.HaveLength(be.Eq(5)))
-			expect.Expect(t, spyTB).To(spytb.HaveError("expected goodbye to have length be equal to 5, but it was 7"))
+			expect.It(spyTB, "goodbye").To(be.Len(be.Eq(5)))
+			expect.It(t, spyTB).To(spytb.Error("expected goodbye to have length be equal to 5, but it was 7"))
 		})
 	})
 }

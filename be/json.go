@@ -8,7 +8,7 @@ import (
 	"github.com/jsteenb2/expect"
 )
 
-func Parse[T any](matcher expect.Matcher[T]) expect.Matcher[io.Reader] {
+func ParsedJSON[T any](matcher expect.Matcher[T]) expect.Matcher[io.Reader] {
 	return func(rdr io.Reader) expect.MatchResult {
 		var thing T
 		err := json.NewDecoder(rdr).Decode(&thing)

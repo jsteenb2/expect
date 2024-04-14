@@ -7,8 +7,11 @@ import (
 	"github.com/jsteenb2/expect"
 )
 
-// HaveLength will check a string's length meets the given matcher's criteria.
-func HaveLength(matcher expect.Matcher[int]) expect.Matcher[string] {
+// Len will check a string's length meets the given matcher's criteria.
+// TODO: would be nice to generalize this a bit more so that it works with
+//		 any slice. Finding it awkward with the existing matcher type matching.
+//		 Need to noodle on it a bit.
+func Len(matcher expect.Matcher[int]) expect.Matcher[string] {
 	return func(in string) expect.MatchResult {
 		result := matcher(len(in))
 		result.Description = fmt.Sprintf("have length %v", result.Description)
@@ -16,8 +19,8 @@ func HaveLength(matcher expect.Matcher[int]) expect.Matcher[string] {
 	}
 }
 
-// HaveAllCaps will check if a string is in all caps.
-func HaveAllCaps(in string) expect.MatchResult {
+// AllCaps will check if a string is in all caps.
+func AllCaps(in string) expect.MatchResult {
 	return expect.MatchResult{
 		Description: "in all caps",
 		Matches:     strings.ToUpper(in) == in,
@@ -25,8 +28,8 @@ func HaveAllCaps(in string) expect.MatchResult {
 	}
 }
 
-// HaveSubstring will check if a string contains a given substring.
-func HaveSubstring(substring string) expect.Matcher[string] {
+// Substring will check if a string contains a given substring.
+func Substring(substring string) expect.Matcher[string] {
 	return func(in string) expect.MatchResult {
 		return expect.MatchResult{
 			Description: fmt.Sprintf("contain %q", substring),

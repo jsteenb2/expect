@@ -11,8 +11,10 @@ var passingResult = expect.MatchResult{
 	Matches: true,
 }
 
-// HaveSize checks if an array's size meets a matcher's criteria.
-func HaveSize[T any](matcher expect.Matcher[int]) expect.Matcher[[]T] {
+// Size checks if an array's size meets a matcher's criteria.
+// TODO(berg): this API gets a bit awkward. The generic type matching struggles a bit here...
+//  		   not sure what the resolution is here just yet. Need to play with it some more.
+func Size[T any](matcher expect.Matcher[int]) expect.Matcher[[]T] {
 	return func(items []T) expect.MatchResult {
 		result := matcher(len(items))
 		result.Description = "have a size " + result.Description
@@ -20,8 +22,8 @@ func HaveSize[T any](matcher expect.Matcher[int]) expect.Matcher[[]T] {
 	}
 }
 
-// ContainItem checks if an array contains an item that meets a matcher's criteria.
-func ContainItem[T any](m expect.Matcher[T]) expect.Matcher[[]T] {
+// ContainingItem checks if an array contains an item that meets a matcher's criteria.
+func ContainingItem[T any](m expect.Matcher[T]) expect.Matcher[[]T] {
 	return func(items []T) expect.MatchResult {
 		var exampleFailure expect.MatchResult
 		
@@ -58,8 +60,8 @@ func EveryItem[T any](m expect.Matcher[T]) expect.Matcher[[]T] {
 	}
 }
 
-// ShallowEquals checks if two slices are equal, only works with slices of comparable types.
-func ShallowEquals[T comparable](other []T) expect.Matcher[[]T] {
+// ShallowEq checks if two slices are equal, only works with slices of comparable types.
+func ShallowEq[T comparable](other []T) expect.Matcher[[]T] {
 	return func(ts []T) expect.MatchResult {
 		return expect.MatchResult{
 			Matches:     slices.Equal(ts, other),

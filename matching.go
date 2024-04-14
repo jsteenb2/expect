@@ -19,29 +19,29 @@ type (
 	}
 )
 
-// Expect is the entry point for the matcher DSL. Pass in the testing.TB and the subject you want to test.
-func Expect[T any](t TB, subject T) Inspector[T] {
+// It is the entry point for the matcher DSL. Pass in the testing.TB and the subject you want to test.
+func It[T any](t TB, subject T) Inspector[T] {
 	return Inspector[T]{t, subject}
 }
 
-// ExpectNoError is a helper function that will call t.Fatalf if the error is not nil.
-func ExpectNoError(t TB, err error) {
+// NoError is a helper function that will call t.Fatalf if the error is not nil.
+func NoError(t TB, err error) {
 	t.Helper()
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 }
 
-// ExpectError is a helper function that will call t.Fatalf if the error is nil.
-func ExpectError(t TB, err error) {
+// Error is a helper function that will call t.Fatalf if the error is nil.
+func Error(t TB, err error) {
 	t.Helper()
 	if err == nil {
 		t.Fatalf("expected an error")
 	}
 }
 
-// ExpectErrorOfType is a helper function that will call t.Fatalf if the error is not of the expected type.
-func ExpectErrorOfType(t TB, err error, expectedType error) {
+// ErrorOfType is a helper function that will call t.Fatalf if the error is not of the expected type.
+func ErrorOfType(t TB, err error, expectedType error) {
 	t.Helper()
 	if !errors.Is(err, expectedType) {
 		t.Fatalf("expected error of type %T, but got %q", expectedType, err.Error())

@@ -29,8 +29,8 @@ func Eq[T comparable](expected T) expect.Matcher[T] {
 	}
 }
 
-// LessThan checks if a value is less than another value.
-func LessThan[T cmp.Ordered](in T) expect.Matcher[T] {
+// Less checks if a value is less than another value.
+func Less[T cmp.Ordered](in T) expect.Matcher[T] {
 	return func(got T) expect.MatchResult {
 		return expect.MatchResult{
 			Description: fmt.Sprintf("be less than %v", in),
@@ -40,8 +40,8 @@ func LessThan[T cmp.Ordered](in T) expect.Matcher[T] {
 	}
 }
 
-// GreaterThan checks if a value is greater than another value.
-func GreaterThan[T cmp.Ordered](in T) expect.Matcher[T] {
+// Greater checks if a value is greater than another value.
+func Greater[T cmp.Ordered](in T) expect.Matcher[T] {
 	return func(got T) expect.MatchResult {
 		return expect.MatchResult{
 			Description: fmt.Sprintf("be greater than %v", in),

@@ -30,7 +30,7 @@ func ExampleParse() {
 	
 	someJSON := bytes.NewBuffer([]byte(`{"name": "John", "age": 42}`))
 	
-	expect.Expect[io.Reader](t, someJSON).To(be.Parse[Person](HasName("John")))
+	expect.It[io.Reader](t, someJSON).To(be.ParsedJSON[Person](HasName("John")))
 	fmt.Println(t.Result())
 	// Output: Test passed
 }
@@ -45,7 +45,7 @@ func ExampleParse_fail() {
 	
 	someJSON := bytes.NewBuffer([]byte(`invalid json`))
 	
-	expect.Expect[io.Reader](t, someJSON).To(be.Parse[Person](be.Eq(Person{
+	expect.It[io.Reader](t, someJSON).To(be.ParsedJSON[Person](be.Eq(Person{
 		Name: "Pepper",
 		Age:  14,
 	})))

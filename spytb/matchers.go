@@ -6,7 +6,7 @@ import (
 	"github.com/jsteenb2/expect"
 )
 
-func HaveError(s string) expect.Matcher[*expect.SpyTB] {
+func Error(s string) expect.Matcher[*expect.SpyTB] {
 	return func(tb *expect.SpyTB) expect.MatchResult {
 		found := false
 		for _, e := range tb.ErrorCalls {
@@ -22,7 +22,7 @@ func HaveError(s string) expect.Matcher[*expect.SpyTB] {
 	}
 }
 
-func HaveNoErrors(tb *expect.SpyTB) expect.MatchResult {
+func NoErrors(tb *expect.SpyTB) expect.MatchResult {
 	return expect.MatchResult{
 		Description: "have no errors",
 		Matches:     len(tb.ErrorCalls) == 0,

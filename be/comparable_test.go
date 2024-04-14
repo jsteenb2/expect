@@ -9,58 +9,44 @@ import (
 	"github.com/jsteenb2/expect/spytb"
 )
 
-func ExampleEqual() {
+func ExampleEq() {
 	t := &expect.SpyTB{}
-	expect.Expect(t, 2).To(be.Eq(2))
+	expect.It(t, 5).To(be.Eq(5))
 	fmt.Println(t.Result())
 	// Output: Test passed
 }
 
-func ExampleEqual_fail() {
+func ExampleEq_fail() {
 	t := &expect.SpyTB{}
-	expect.Expect(t, 2).To(be.Eq(1))
-	fmt.Println(t.Result())
-	// Output: Test failed: [expected 2 to be equal to 1, but it was 2]
-}
-
-func ExampleEqualTo() {
-	t := &expect.SpyTB{}
-	expect.Expect(t, 5).To(be.Eq(5))
-	fmt.Println(t.Result())
-	// Output: Test passed
-}
-
-func ExampleEqualTo_fail() {
-	t := &expect.SpyTB{}
-	expect.Expect(t, 5).To(be.Eq(4))
+	expect.It(t, 5).To(be.Eq(4))
 	fmt.Println(t.Result())
 	// Output: Test failed: [expected 5 to be equal to 4, but it was 5]
 }
 
-func ExampleGreaterThan() {
+func ExampleGreater() {
 	t := &expect.SpyTB{}
-	expect.Expect(t, 5).To(be.GreaterThan(4))
+	expect.It(t, 5).To(be.Greater(4))
 	fmt.Println(t.Result())
 	// Output: Test passed
 }
 
-func ExampleGreaterThan_fail() {
+func ExampleGreater_fail() {
 	t := &expect.SpyTB{}
-	expect.Expect(t, 5).To(be.GreaterThan(6))
+	expect.It(t, 5).To(be.Greater(6))
 	fmt.Println(t.Result())
 	// Output: Test failed: [expected 5 to be greater than 6, but it was 5]
 }
 
-func ExampleLessThan() {
+func ExampleLess() {
 	t := &expect.SpyTB{}
-	expect.Expect(t, 5).To(be.LessThan(6))
+	expect.It(t, 5).To(be.Less(6))
 	fmt.Println(t.Result())
 	// Output: Test passed
 }
 
-func ExampleLessThan_fail() {
+func ExampleLess_fail() {
 	t := &expect.SpyTB{}
-	expect.Expect(t, 5).To(be.LessThan(4))
+	expect.It(t, 5).To(be.Less(4))
 	fmt.Println(t.Result())
 	// Output: Test failed: [expected 5 to be less than 4, but it was 5]
 }
@@ -68,23 +54,23 @@ func ExampleLessThan_fail() {
 func TestComparisonMatchers(t *testing.T) {
 	t.Run("Less than", func(t *testing.T) {
 		t.Run("passing", func(t *testing.T) {
-			expect.Expect(t, 5).To(be.LessThan(6))
+			expect.It(t, 5).To(be.Less(6))
 		})
 		
 		t.Run("failing", func(t *testing.T) {
-			spytb.VerifyFailingMatcher(t, 6, be.LessThan(6), "expected 6 to be less than 6, but it was 6")
-			spytb.VerifyFailingMatcher(t, 6, be.LessThan(3), "expected 6 to be less than 3, but it was 6")
+			spytb.VerifyFailingMatcher(t, 6, be.Less(6), "expected 6 to be less than 6, but it was 6")
+			spytb.VerifyFailingMatcher(t, 6, be.Less(3), "expected 6 to be less than 3, but it was 6")
 		})
 	})
 	
 	t.Run("Greater than", func(t *testing.T) {
 		t.Run("passing", func(t *testing.T) {
-			expect.Expect(t, 5).To(be.GreaterThan(4))
+			expect.It(t, 5).To(be.Greater(4))
 		})
 		
 		t.Run("failing", func(t *testing.T) {
-			spytb.VerifyFailingMatcher(t, 6, be.GreaterThan(6), "expected 6 to be greater than 6, but it was 6")
-			spytb.VerifyFailingMatcher(t, 2, be.GreaterThan(10), "expected 2 to be greater than 10, but it was 2")
+			spytb.VerifyFailingMatcher(t, 6, be.Greater(6), "expected 6 to be greater than 6, but it was 6")
+			spytb.VerifyFailingMatcher(t, 2, be.Greater(10), "expected 2 to be greater than 10, but it was 2")
 		})
 	})
 	
