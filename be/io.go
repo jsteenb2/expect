@@ -1,16 +1,17 @@
-package io
+package be
 
 import (
 	"bytes"
 	"fmt"
-	"github.com/quii/pepper"
 	"io"
+	
+	"github.com/jsteenb2/expect"
 )
 
 // ContainingByte will check if the given byte slice is contained in the byte slice.
-func ContainingByte(want []byte) pepper.Matcher[[]byte] {
-	return func(have []byte) pepper.MatchResult {
-		return pepper.MatchResult{
+func ContainingByte(want []byte) expect.Matcher[[]byte] {
+	return func(have []byte) expect.MatchResult {
+		return expect.MatchResult{
 			Description: fmt.Sprintf("contain %q", want),
 			Matches:     bytes.Contains(have, want),
 			SubjectName: "the reader",
@@ -20,9 +21,9 @@ func ContainingByte(want []byte) pepper.Matcher[[]byte] {
 }
 
 // ContainingString will check if the given string is contained in the byte slice.
-func ContainingString(want string) pepper.Matcher[[]byte] {
-	return func(have []byte) pepper.MatchResult {
-		return pepper.MatchResult{
+func ContainingString(want string) expect.Matcher[[]byte] {
+	return func(have []byte) expect.MatchResult {
+		return expect.MatchResult{
 			Description: fmt.Sprintf("contain %q", want),
 			Matches:     bytes.Contains(have, []byte(want)),
 			SubjectName: "the reader",
@@ -32,11 +33,11 @@ func ContainingString(want string) pepper.Matcher[[]byte] {
 }
 
 // HaveData will read all the data from the io.Reader and run the given matcher on it.
-func HaveData(matcher pepper.Matcher[[]byte]) pepper.Matcher[io.Reader] {
-	return func(reader io.Reader) pepper.MatchResult {
+func HaveData(matcher expect.Matcher[[]byte]) expect.Matcher[io.Reader] {
+	return func(reader io.Reader) expect.MatchResult {
 		all, err := io.ReadAll(reader)
 		if err != nil {
-			return pepper.MatchResult{
+			return expect.MatchResult{
 				Description: "have data in io.Reader",
 				Matches:     false,
 				But:         "it could not be read",
@@ -46,11 +47,11 @@ func HaveData(matcher pepper.Matcher[[]byte]) pepper.Matcher[io.Reader] {
 	}
 }
 
-func HaveString(matcher pepper.Matcher[string]) pepper.Matcher[io.Reader] {
-	return func(reader io.Reader) pepper.MatchResult {
+func HaveString(matcher expect.Matcher[string]) expect.Matcher[io.Reader] {
+	return func(reader io.Reader) expect.MatchResult {
 		all, err := io.ReadAll(reader)
 		if err != nil {
-			return pepper.MatchResult{
+			return expect.MatchResult{
 				Description: "have data in io.Reader",
 				Matches:     false,
 				But:         "it could not be read",

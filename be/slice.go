@@ -1,18 +1,19 @@
-package slice
+package be
 
 import (
 	"fmt"
-	"github.com/quii/pepper"
 	"slices"
+	
+	"github.com/jsteenb2/expect"
 )
 
-var passingResult = pepper.MatchResult{
+var passingResult = expect.MatchResult{
 	Matches: true,
 }
 
 // HaveSize checks if an array's size meets a matcher's criteria.
-func HaveSize[T any](matcher pepper.Matcher[int]) pepper.Matcher[[]T] {
-	return func(items []T) pepper.MatchResult {
+func HaveSize[T any](matcher expect.Matcher[int]) expect.Matcher[[]T] {
+	return func(items []T) expect.MatchResult {
 		result := matcher(len(items))
 		result.Description = "have a size " + result.Description
 		return result
@@ -20,14 +21,14 @@ func HaveSize[T any](matcher pepper.Matcher[int]) pepper.Matcher[[]T] {
 }
 
 // ContainItem checks if an array contains an item that meets a matcher's criteria.
-func ContainItem[T any](m pepper.Matcher[T]) pepper.Matcher[[]T] {
-	return func(items []T) pepper.MatchResult {
-		var exampleFailure pepper.MatchResult
-
+func ContainItem[T any](m expect.Matcher[T]) expect.Matcher[[]T] {
+	return func(items []T) expect.MatchResult {
+		var exampleFailure expect.MatchResult
+		
 		for _, item := range items {
 			result := m(item)
 			if result.Matches {
-				return pepper.MatchResult{
+				return expect.MatchResult{
 					Description: "contain an item",
 					Matches:     true,
 				}
@@ -35,40 +36,40 @@ func ContainItem[T any](m pepper.Matcher[T]) pepper.Matcher[[]T] {
 				exampleFailure = result
 			}
 		}
-
+		
 		exampleFailure.But = "it did not"
 		exampleFailure.Description = "contain an item " + exampleFailure.Description
 		exampleFailure.SubjectName = fmt.Sprintf("%+v", items)
-
+		
 		return exampleFailure
 	}
 }
 
 // EveryItem checks if every item in an array meets a matcher's criteria.
-func EveryItem[T any](m pepper.Matcher[T]) pepper.Matcher[[]T] {
-	return func(items []T) pepper.MatchResult {
+func EveryItem[T any](m expect.Matcher[T]) expect.Matcher[[]T] {
+	return func(items []T) expect.MatchResult {
 		for _, item := range items {
 			if result := m(item); !result.Matches {
 				return everyItemFailure(result)
 			}
 		}
-
+		
 		return passingResult
 	}
 }
 
 // ShallowEquals checks if two slices are equal, only works with slices of comparable types.
-func ShallowEquals[T comparable](other []T) pepper.Matcher[[]T] {
-	return func(ts []T) pepper.MatchResult {
-		return pepper.MatchResult{
+func ShallowEquals[T comparable](other []T) expect.Matcher[[]T] {
+	return func(ts []T) expect.MatchResult {
+		return expect.MatchResult{
 			Matches:     slices.Equal(ts, other),
 			Description: fmt.Sprintf("be equal to %v", other),
 		}
 	}
 }
 
-func everyItemFailure(result pepper.MatchResult) pepper.MatchResult {
-	return pepper.MatchResult{
+func everyItemFailure(result expect.MatchResult) expect.MatchResult {
+	return expect.MatchResult{
 		Description: "have every item " + result.Description,
 		Matches:     false,
 		But:         result.But,

@@ -1,164 +1,164 @@
-package pepper_test
+package expect_test
 
 import (
 	"errors"
 	"fmt"
-	. "github.com/quii/pepper"
-	. "github.com/quii/pepper/matchers/comparable"
-	. "github.com/quii/pepper/matchers/string"
 	"testing"
+	
+	"github.com/jsteenb2/expect"
+	"github.com/jsteenb2/expect/be"
 )
 
 func ExampleInspector_To() {
-	t := &SpyTB{}
-	Expect(t, "Pepper").To(EqualTo("Stanley"))
+	t := &expect.SpyTB{}
+	expect.Expect(t, "Pepper").To(be.Eq("Stanley"))
 	fmt.Println(t.Result())
-	//Output: Test failed: [expected "Pepper" to be equal to "Stanley", but it was "Pepper"]
+	// Output: Test failed: [expected "Pepper" to be equal to "Stanley", but it was "Pepper"]
 }
 
 func ExampleMatcher_Or() {
-	t := &SpyTB{}
+	t := &expect.SpyTB{}
 	tshirt := TShirt{Colour: "yellow"}
-
-	Expect(t, tshirt).To(HaveColour("blue").Or(HaveColour("red")))
+	
+	expect.Expect(t, tshirt).To(HaveColour("blue").Or(HaveColour("red")))
 	fmt.Println(t.Result())
-	//Output: Test failed: [expected the t-shirt to have colour "blue" or have colour "red", but it was "yellow"]
+	// Output: Test failed: [expected the t-shirt to have colour "blue" or have colour "red", but it was "yellow"]
 }
 
 func ExampleNot() {
-	t := &SpyTB{}
-
+	t := &expect.SpyTB{}
+	
 	tshirt := TShirt{Colour: "yellow"}
-
-	Expect(t, tshirt).To(Not(HaveColour("yellow")))
+	
+	expect.Expect(t, tshirt).To(expect.Not(HaveColour("yellow")))
 	fmt.Println(t.Result())
-	//Output: Test failed: [expected the t-shirt to not have colour "yellow"]
+	// Output: Test failed: [expected the t-shirt to not have colour "yellow"]
 }
 
 func ExampleMatcher_And() {
-	t := &SpyTB{}
+	t := &expect.SpyTB{}
 	player := Player{
 		Name:   "Chris",
 		Points: 11,
 	}
-
-	Expect(t, player).To(HaveScore(
-		GreaterThan(5).And(LessThan(10)),
+	
+	expect.Expect(t, player).To(HaveScore(
+		be.GreaterThan(5).And(be.LessThan(10)),
 	))
 	fmt.Println(t.Result())
-	//Output: Test failed: [expected Player Chris to score be greater than 5 and be less than 10, but it was 11]
+	// Output: Test failed: [expected Player Chris to score be greater than 5 and be less than 10, but it was 11]
 }
 
 func ExampleExpectNoError() {
-	t := &SpyTB{}
-
+	t := &expect.SpyTB{}
+	
 	err := errors.New("oh no")
-
-	ExpectNoError(t, err)
+	
+	expect.ExpectNoError(t, err)
 	fmt.Println(t.Result())
-	//Output: Test failed: [unexpected error: oh no]
+	// Output: Test failed: [unexpected error: oh no]
 }
 
 func ExampleExpectError() {
-	t := &SpyTB{}
-
+	t := &expect.SpyTB{}
+	
 	err := errors.New("oh no")
-
-	ExpectError(t, err)
+	
+	expect.ExpectError(t, err)
 	fmt.Println(t.Result())
-	//Output: Test passed
+	// Output: Test passed
 }
 
 func ExampleExpectErrorOfType() {
-	t := &SpyTB{}
-
+	t := &expect.SpyTB{}
+	
 	unauthorised := errors.New("unauthorised")
 	wrappedErr := fmt.Errorf("oh no: %w", unauthorised)
-
-	ExpectErrorOfType(t, wrappedErr, unauthorised)
+	
+	expect.ExpectErrorOfType(t, wrappedErr, unauthorised)
 	fmt.Println(t.Result())
-	//Output: Test passed
+	// Output: Test passed
 }
 
 func ExampleExpectErrorOfType_failing() {
-	t := &SpyTB{}
-
+	t := &expect.SpyTB{}
+	
 	unauthorised := errors.New("unauthorised")
 	wrappedErr := fmt.Errorf("oh no: %w", unauthorised)
-
-	ExpectErrorOfType(t, wrappedErr, errors.New("not found"))
+	
+	expect.ExpectErrorOfType(t, wrappedErr, errors.New("not found"))
 	fmt.Println(t.Result())
-	//Output: Test failed: [expected error of type *errors.errorString, but got "oh no: unauthorised"]
+	// Output: Test failed: [expected error of type *errors.errorString, but got "oh no: unauthorised"]
 }
 
 func TestMatching(t *testing.T) {
 	t.Run("passing example", func(t *testing.T) {
-		Expect(t, "hello").To(
-			HaveLength(EqualTo(5)),
-			EqualTo("hello"),
-			HaveSubstring("ell"),
-			Doesnt(HaveAllCaps),
+		expect.Expect(t, "hello").To(
+			be.HaveLength(be.Eq(5)),
+			be.Eq("hello"),
+			be.HaveSubstring("ell"),
+			expect.Doesnt(be.HaveAllCaps),
 		)
 	})
-
+	
 	t.Run("combining failures", func(t *testing.T) {
 		t.Run("when it has a but and both failed", func(t *testing.T) {
 			someString := "goodbye"
-			result1 := HaveLength(EqualTo(5))(someString)
-			result2 := HaveAllCaps(someString)
-
-			expected := MatchResult{
+			result1 := be.HaveLength(be.Eq(5))(someString)
+			result2 := be.HaveAllCaps(someString)
+			
+			expected := expect.MatchResult{
 				Description: `have length be equal to 5 and in all caps`,
 				Matches:     false,
 				But:         "it was 7 and it was not in all caps",
 			}
-
+			
 			actual := result1.Combine(result2)
-			Expect(t, actual).To(EqualTo(expected))
+			expect.Expect(t, actual).To(be.Eq(expected))
 		})
-
+		
 		t.Run("when nothing fails", func(t *testing.T) {
 			someString := "HELLO"
-			result1 := HaveLength(EqualTo(5))(someString)
-			result2 := HaveAllCaps(someString)
-
-			expected := MatchResult{
+			result1 := be.HaveLength(be.Eq(5))(someString)
+			result2 := be.HaveAllCaps(someString)
+			
+			expected := expect.MatchResult{
 				Description: `have length be equal to 5 and in all caps`,
 				Matches:     true,
 			}
-
+			
 			actual := result1.Combine(result2)
-			Expect(t, actual).To(EqualTo(expected))
+			expect.Expect(t, actual).To(be.Eq(expected))
 		})
-
+		
 		t.Run("when first match is passing but second is failing", func(t *testing.T) {
 			someString := "hello"
-			result1 := HaveLength(EqualTo(5))(someString)
-			result2 := HaveAllCaps(someString)
-
-			expected := MatchResult{
+			result1 := be.HaveLength(be.Eq(5))(someString)
+			result2 := be.HaveAllCaps(someString)
+			
+			expected := expect.MatchResult{
 				Description: `have length be equal to 5 and in all caps`,
 				Matches:     false,
 				But:         "it was not in all caps",
 			}
-
+			
 			actual := result1.Combine(result2)
-			Expect(t, actual).To(EqualTo(expected))
+			expect.Expect(t, actual).To(be.Eq(expected))
 		})
-
+		
 		t.Run("when first match is failing but second is passing", func(t *testing.T) {
 			someString := "GOODBYE"
-			result1 := HaveLength(EqualTo(5))(someString)
-			result2 := HaveAllCaps(someString)
-
-			expected := MatchResult{
+			result1 := be.HaveLength(be.Eq(5))(someString)
+			result2 := be.HaveAllCaps(someString)
+			
+			expected := expect.MatchResult{
 				Description: `have length be equal to 5 and in all caps`,
 				Matches:     false,
 				But:         "it was 7",
 			}
-
+			
 			actual := result1.Combine(result2)
-			Expect(t, actual).To(EqualTo(expected))
+			expect.Expect(t, actual).To(be.Eq(expected))
 		})
 	})
 }
@@ -171,9 +171,9 @@ func (t TShirt) String() string {
 	return "the t-shirt"
 }
 
-func HaveColour(colour string) Matcher[TShirt] {
-	return func(t TShirt) MatchResult {
-		return MatchResult{
+func HaveColour(colour string) expect.Matcher[TShirt] {
+	return func(t TShirt) expect.MatchResult {
+		return expect.MatchResult{
 			Description: fmt.Sprintf("have colour %q", colour),
 			Matches:     t.Colour == colour,
 			But:         fmt.Sprintf("it was %q", t.Colour),
@@ -190,10 +190,10 @@ func (s Player) String() string {
 	return fmt.Sprintf("Player %s", s.Name)
 }
 
-func HaveScore(matcher Matcher[int]) Matcher[Player] {
-	return func(s Player) MatchResult {
+func HaveScore(matcher expect.Matcher[int]) expect.Matcher[Player] {
+	return func(s Player) expect.MatchResult {
 		result := matcher(s.Points)
-		return MatchResult{
+		return expect.MatchResult{
 			Description: "score " + result.Description,
 			Matches:     result.Matches,
 			But:         fmt.Sprintf("it was %d", s.Points),

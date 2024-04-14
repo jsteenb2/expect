@@ -1,4 +1,4 @@
-package pepper
+package expect
 
 import "fmt"
 
@@ -27,21 +27,21 @@ func (m MatchResult) Combine(other MatchResult) MatchResult {
 	if m.Zero() {
 		return other
 	}
-
+	
 	but := m.But + " and " + other.But
-
+	
 	if m.Matches && other.Matches {
 		but = ""
 	}
-
+	
 	if m.Matches && !other.Matches {
 		but = other.But
 	}
-
+	
 	if !m.Matches && other.Matches {
 		but = m.But
 	}
-
+	
 	return MatchResult{
 		Description: m.Description + " and " + other.Description,
 		Matches:     m.Matches && other.Matches,

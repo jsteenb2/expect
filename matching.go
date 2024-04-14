@@ -1,4 +1,4 @@
-package pepper
+package expect
 
 import (
 	"errors"
@@ -53,11 +53,11 @@ func (e Inspector[T]) To(matchers ...Matcher[T]) {
 	e.t.Helper()
 	for _, matcher := range matchers {
 		result := matcher(e.Subject)
-
+		
 		if result.SubjectName == "" {
 			result.SubjectName = calculateSubjectName(e)
 		}
-
+		
 		if !result.Matches {
 			e.t.Error(result.Error())
 		}
@@ -66,7 +66,7 @@ func (e Inspector[T]) To(matchers ...Matcher[T]) {
 
 func calculateSubjectName[T any](e Inspector[T]) string {
 	var subjectName = fmt.Sprintf("%v", e.Subject)
-
+	
 	if str, isStringer := any(e.Subject).(fmt.Stringer); isStringer {
 		subjectName = str.String()
 	}
