@@ -99,54 +99,55 @@ Here is an example of testing a todo-list
 
 ```go
 type Todo struct {
-Name        string    `json:"name"`
-Completed   bool      `json:"completed"`
-LastUpdated time.Time `json:"last_updated"`
+	Name        string    `json:"name"`
+	Completed   bool      `json:"completed"`
+	LastUpdated time.Time `json:"last_updated"`
 }
 
 func WithCompletedTODO(todo Todo) MatchResult {
-return MatchResult{
-Description: "have a completed todo",
-Matches:     todo.Completed,
-But:         "it wasn't complete",
+	return MatchResult{
+		Description: "have a completed todo",
+		Matches:     todo.Completed,
+		But:         "it wasn't complete",
+	}
 }
-}
+
 func WithTodoNameOf(todoName string) Matcher[Todo] {
-return func (todo Todo) MatchResult {
-return MatchResult{
-Description: fmt.Sprintf("have a todo name of %q", todoName),
-Matches:     todo.Name == todoName,
-But:         fmt.Sprintf("it was %q", todo.Name),
-}
-}
+	return func (todo Todo) MatchResult {
+		return MatchResult{
+			Description: fmt.Sprintf("have a todo name of %q", todoName),
+			Matches:     todo.Name == todoName,
+			But:         fmt.Sprintf("it was %q", todo.Name),
+		}
+	}
 }
 
 func TestTodos(t *testing.T) {
-t.Run("with completed todo", func (t *testing.T) {
-res := httptest.NewRecorder()
-res.Body.WriteString(`{"name": "Finish the side project", "completed": true}`)
-expect.It(t, res.Result()).To(be.HTTPRespBody(be.ParsedJSON[Todo](WithCompletedTODO)))
-})
+	t.Run("with completed todo", func (t *testing.T) {
+		res := httptest.NewRecorder()
+		res.Body.WriteString(`{"name": "Finish the side project", "completed": true}`)
+		expect.It(t, res.Result()).To(be.HTTPRespBody(be.ParsedJSON[Todo](WithCompletedTODO)))
+	})
 
-t.Run("with a todo name", func (t *testing.T) {
-res := httptest.NewRecorder()
-res.Body.WriteString(`{"name": "Finish the side project", "completed": false}`)
-expect.It(t, res.Result()).To(be.HTTPRespBody(be.ParsedJSON[Todo](WithTodoNameOf("Finish the side project"))))
-})
+	t.Run("with a todo name", func (t *testing.T) {
+		res := httptest.NewRecorder()
+		res.Body.WriteString(`{"name": "Finish the side project", "completed": false}`)
+		expect.It(t, res.Result()).To(be.HTTPRespBody(be.ParsedJSON[Todo](WithTodoNameOf("Finish the side project"))))
+	})
 
-t.Run("compose the matchers", func (t *testing.T) {
-res := httptest.NewRecorder()
+	t.Run("compose the matchers", func (t *testing.T) {
+		res := httptest.NewRecorder()
 
-res.Body.WriteString(`{"name": "Egg", "completed": false}`)
-res.Header().Add("content-type", "application/json")
+		res.Body.WriteString(`{"name": "Egg", "completed": false}`)
+		res.Header().Add("content-type", "application/json")
 
-expect.It(t, res.Result()).To(
-be.HTTPStatus(http.StatusOK),
-be.ContentTypeJSONHeader,
-be.HTTPRespBody(be.ParsedJSON[Todo](WithTodoNameOf("Egg").And(be.Not(WithCompletedTODO)))),
-)
-})
-})
+		expect.It(t, res.Result()).To(
+			be.HTTPStatus(http.StatusOK),
+			be.ContentTypeJSONHeader,
+			be.HTTPRespBody(be.ParsedJSON[Todo](WithTodoNameOf("Egg").And(be.Not(WithCompletedTODO)))),
+		)
+	})
+}
 ```
 
 Note how we can compose built-in matchers like `HTTPStatus`, `ContentTypeJSONHeader` and `Not`, with the custom-built
@@ -170,9 +171,9 @@ Computer, I already know that true is not equal to false. What was not false? Wh
 
 ```go
 t.Run("failure message", func (t *testing.T) {
-res := httptest.NewRecorder()
-res.WriteHeader(http.StatusNotFound)
-expect.It(t, res.Result()).To(be.HttpStatus(http.StatusOK))
+	res := httptest.NewRecorder()
+	res.WriteHeader(http.StatusNotFound)
+	expect.It(t, res.Result()).To(be.HttpStatus(http.StatusOK))
 })
 ```
 
@@ -264,10 +265,10 @@ little more upfront effort when writing your own matchers.
 
 ```go
 type MatchResult struct {
-Description string
-Matches     bool
-But         string
-SubjectName string
+	Description string
+	Matches     bool
+	But         string
+	SubjectName string
 }
 ```
 
@@ -312,10 +313,10 @@ Here is the definition of `MatchResult`
 
 ```go
 type MatchResult struct {
-Description string
-Matches     bool
-But         string
-SubjectName string
+	Description string
+	Matches     bool
+	But         string
+	SubjectName string
 }
 ```
 
@@ -323,11 +324,11 @@ Here is how `HaveAllCaps` is defined
 
 ```go
 func HaveAllCaps(in string) matching.MatchResult {
-return matching.MatchResult{
-Description: "be in all caps",
-Matches:     strings.ToUpper(in) == in,
-But:         "it was not in all caps",
-}
+	return matching.MatchResult{
+		Description: "be in all caps",
+		Matches:     strings.ToUpper(in) == in,
+		But:         "it was not in all caps",
+	}
 }
 ```
 
@@ -342,13 +343,13 @@ A simple example is with `Eq`
 
 ```go
 func Eq[T comparable](in T) matching.Matcher[T] {
-return func (got T) matching.MatchResult {
-return matching.MatchResult{
-Description: fmt.Sprintf("be equal to %v", in),
-Matches:     got == in,
-But:         fmt.Sprintf("it was %v", got),
-}
-}
+	return func (got T) matching.MatchResult {
+		return matching.MatchResult{
+			Description: fmt.Sprintf("be equal to %v", in),
+			Matches:     got == in,
+			But:         fmt.Sprintf("it was %v", got),
+		}
+	}
 }
 ```
 
@@ -368,9 +369,9 @@ However, this needlessly couples the matcher to the specific matching I was curr
 
 ```go
 func Size[T any](matcher expect.Matcher[int]) expect.Matcher[[]T] {
-return func (items []T) expect.MatchResult {
-return matcher(len(items))
-}
+	return func (items []T) expect.MatchResult {
+		return matcher(len(items))
+	}
 }
 ```
 
@@ -394,23 +395,23 @@ testing matchers.
 
 ```go
 func ExampleContainItem() {
-t := &SpyTB{}
+	t := &SpyTB{}
 
-anArray := []string{"HELLO", "WORLD"}
-expect.It(t, anArray).To(ContainItem(HaveAllCaps))
+	anArray := []string{"HELLO", "WORLD"}
+	expect.It(t, anArray).To(ContainItem(HaveAllCaps))
 
-fmt.Println(t.LastError())
-// Output:
+	fmt.Println(t.LastError())
+	// Output:
 }
 
 func ExampleContainItem_fail() {
-t := &SpyTB{}
+	t := &SpyTB{}
 
-anArray := []string{"hello", "world"}
-expect.It(t, anArray).To(ContainItem(HaveAllCaps))
+	anArray := []string{"hello", "world"}
+	expect.It(t, anArray).To(ContainItem(HaveAllCaps))
 
-fmt.Println(t.LastError())
-// Output: expected [hello world] to contain an item in all caps, but it did not
+	fmt.Println(t.LastError())
+	// Output: expected [hello world] to contain an item in all caps, but it did not
 }
 ```
 
@@ -421,27 +422,27 @@ Check out some of the unit tests for some of the comparison matchers
 
 ```go
 func TestComparisonMatchers(t *testing.T) {
-t.Run("Less than", func (t *testing.T) {
-t.Run("passing", func (t *testing.T) {
-expect.It(t, 5).To(be.Less(6))
-})
+	t.Run("Less than", func (t *testing.T) {
+		t.Run("passing", func (t *testing.T) {
+			expect.It(t, 5).To(be.Less(6))
+		})
 
-t.Run("failing", func (t *testing.T) {
-spytb.VerifyFailingMatcher(t, 6, be.Less(6), "expected 6 to be less than 6")
-spytb.VerifyFailingMatcher(t, 6, be.Less(3), "expected 6 to be less than 3")
-})
-})
+		t.Run("failing", func (t *testing.T) {
+			spytb.VerifyFailingMatcher(t, 6, be.Less(6), "expected 6 to be less than 6")
+			spytb.VerifyFailingMatcher(t, 6, be.Less(3), "expected 6 to be less than 3")
+		})
+	})
 
-t.Run("Greater than", func (t *testing.T) {
-t.Run("passing", func (t *testing.T) {
-expect.It(t, 5).To(be.Greater(4))
-})
+	t.Run("Greater than", func (t *testing.T) {
+		t.Run("passing", func (t *testing.T) {
+			expect.It(t, 5).To(be.Greater(4))
+		})
 
-t.Run("failing", func (t *testing.T) {
-spytb.VerifyFailingMatcher(t, 6, be.Greater(6), "expected 6 to be greater than 6")
-spytb.VerifyFailingMatcher(t, 2, be.Greater(10), "expected 2 to be greater than 10")
-})
-})
+		t.Run("failing", func (t *testing.T) {
+			spytb.VerifyFailingMatcher(t, 6, be.Greater(6), "expected 6 to be greater than 6")
+			spytb.VerifyFailingMatcher(t, 2, be.Greater(10), "expected 2 to be greater than 10")
+		})
+	})
 }
 ```
 
