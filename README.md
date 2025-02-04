@@ -41,10 +41,10 @@ Here is the definition of `MatchResult`
 
 ```go
 type MatchResult struct {
-Description string
-Matches     bool
-But         string
-SubjectName string
+	Description string
+	Matches     bool
+	But         string
+	SubjectName string
 }
 ```
 
