@@ -25,6 +25,11 @@ func Status(status int) expect.Matcher[*http.Response] {
 	}
 }
 
+// StatusOK provides a helper for Status(200).
+func StatusOK() expect.Matcher[*http.Response] {
+	return Status(http.StatusOK)
+}
+
 // Header returns a matcher that checks if the response has a header with the given name and value.
 func Header(header, value string) expect.Matcher[*http.Response] {
 	return func(res *http.Response) expect.MatchResult {
@@ -38,10 +43,8 @@ func Header(header, value string) expect.Matcher[*http.Response] {
 }
 
 // ContentType is a convenience matcher for Header("content-type", want).
-func ContentType(want string) func(res *http.Response) expect.MatchResult {
-	return func(res *http.Response) expect.MatchResult {
-		return Header("content-type", want)(res)
-	}
+func ContentType(want string) expect.Matcher[*http.Response] {
+	return Header("Content-Type", want)
 }
 
 // ContentTypeJSON is a convenience matcher for Header("content-type", "application/json").
