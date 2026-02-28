@@ -49,7 +49,7 @@ func ExampleContainingItem_fail() {
 	// Output: Test failed: [expected [hello world] to contain an item in all caps, but it did not]
 }
 
-func ExampleHaveSize() {
+func ExampleSize() {
 	t := &expect.SpyTB{}
 	
 	anArray := []string{"hello", "world"}
@@ -59,7 +59,7 @@ func ExampleHaveSize() {
 	// Output: Test passed
 }
 
-func ExampleHaveSize_fail() {
+func ExampleSize_fail() {
 	t := &expect.SpyTB{}
 	
 	anArray := []string{"hello", "world"}

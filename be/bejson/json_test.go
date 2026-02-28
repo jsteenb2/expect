@@ -1,4 +1,4 @@
-package be_test
+package bejson_test
 
 import (
 	"bytes"
@@ -7,9 +7,10 @@ import (
 	
 	"github.com/jsteenb2/expect"
 	"github.com/jsteenb2/expect/be"
+	"github.com/jsteenb2/expect/be/bejson"
 )
 
-func ExampleParse() {
+func ExampleParsed() {
 	t := &expect.SpyTB{}
 	
 	type Person struct {
@@ -30,12 +31,12 @@ func ExampleParse() {
 	
 	someJSON := bytes.NewBuffer([]byte(`{"name": "John", "age": 42}`))
 	
-	expect.It[io.Reader](t, someJSON).To(be.ParsedJSON[Person](HasName("John")))
+	expect.It[io.Reader](t, someJSON).To(bejson.Parsed[Person](HasName("John")))
 	fmt.Println(t.Result())
 	// Output: Test passed
 }
 
-func ExampleParse_fail() {
+func ExampleParsed_fail() {
 	t := &expect.SpyTB{}
 	
 	type Person struct {
@@ -45,10 +46,10 @@ func ExampleParse_fail() {
 	
 	someJSON := bytes.NewBuffer([]byte(`invalid json`))
 	
-	expect.It[io.Reader](t, someJSON).To(be.ParsedJSON[Person](be.Eq(Person{
+	expect.It[io.Reader](t, someJSON).To(bejson.Parsed[Person](be.Eq(Person{
 		Name: "Pepper",
 		Age:  14,
 	})))
 	fmt.Println(t.Result())
-	// Output: Test failed: [expected JSON to be parseable into be_test.Person, but it could not be parsed: invalid character 'i' looking for beginning of value]
+	// Output: Test failed: [expected JSON to be parseable into bejson_test.Person, but it could not be parsed: invalid character 'i' looking for beginning of value]
 }

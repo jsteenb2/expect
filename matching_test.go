@@ -49,7 +49,7 @@ func ExampleMatcher_And() {
 	// Output: Test failed: [expected Player Chris to score be greater than 5 and be less than 10, but it was 11]
 }
 
-func ExampleExpectNoError() {
+func ExampleNoError() {
 	t := &expect.SpyTB{}
 	
 	err := errors.New("oh no")
@@ -59,7 +59,7 @@ func ExampleExpectNoError() {
 	// Output: Test failed: [unexpected error: oh no]
 }
 
-func ExampleExpectError() {
+func ExampleError() {
 	t := &expect.SpyTB{}
 	
 	err := errors.New("oh no")
@@ -69,7 +69,7 @@ func ExampleExpectError() {
 	// Output: Test passed
 }
 
-func ExampleExpectErrorOfType() {
+func ExampleErrorOfType() {
 	t := &expect.SpyTB{}
 	
 	unauthorised := errors.New("unauthorised")
@@ -80,7 +80,7 @@ func ExampleExpectErrorOfType() {
 	// Output: Test passed
 }
 
-func ExampleExpectErrorOfType_failing() {
+func ExampleErrorOfType_failing() {
 	t := &expect.SpyTB{}
 	
 	unauthorised := errors.New("unauthorised")

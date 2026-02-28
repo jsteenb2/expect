@@ -1,4 +1,4 @@
-package be_test
+package behttp_test
 
 import (
 	"fmt"
@@ -9,25 +9,28 @@ import (
 	
 	"github.com/jsteenb2/expect"
 	"github.com/jsteenb2/expect/be"
+	"github.com/jsteenb2/expect/be/behttp"
+	"github.com/jsteenb2/expect/be/beio"
+	"github.com/jsteenb2/expect/be/bejson"
 	"github.com/jsteenb2/expect/spytb"
 )
 
-func ExampleHTTPRespBody() {
+func ExampleRespBody() {
 	t := &expect.SpyTB{}
 	res := httptest.NewRecorder()
 	res.Body.WriteString("Hello, world")
 	
-	expect.It(t, res.Result()).To(be.HTTPRespBody(be.String(be.Eq("Hello, world"))))
+	expect.It(t, res.Result()).To(behttp.RespBody(beio.String(be.Eq("Hello, world"))))
 	fmt.Println(t.Result())
 	// Output: Test passed
 }
 
-func ExampleHTTPRespBody_fail() {
+func ExampleRespBody_fail() {
 	t := &expect.SpyTB{}
 	res := httptest.NewRecorder()
 	res.Body.WriteString("Hello, world")
 	
-	expect.It(t, res.Result()).To(be.HTTPRespBody(be.String(be.Eq("Goodbye, world"))))
+	expect.It(t, res.Result()).To(behttp.RespBody(beio.String(be.Eq("Goodbye, world"))))
 	fmt.Println(t.Result())
 	// Output: Test failed: [expected the response body to be equal to "Goodbye, world", but it was "Hello, world"]
 }
@@ -37,17 +40,17 @@ func ExampleHeader() {
 	res := httptest.NewRecorder()
 	res.Header().Add("Content-Type", "text/html")
 	
-	expect.It(t, res.Result()).To(be.HTTPHeader("Content-Type", "text/html"))
+	expect.It(t, res.Result()).To(behttp.Header("Content-Type", "text/html"))
 	fmt.Println(t.Result())
 	// Output: Test passed
 }
 
-func ExampleContentTypeJSONHeader() {
+func ExampleContentTypeJSON() {
 	t := &expect.SpyTB{}
 	res := httptest.NewRecorder()
 	res.Header().Add("Content-Type", "application/json")
 	
-	expect.It(t, res.Result()).To(be.ContentTypeJSONHeader)
+	expect.It(t, res.Result()).To(behttp.ContentTypeJSON)
 	fmt.Println(t.Result())
 	// Output: Test passed
 }
@@ -59,8 +62,8 @@ func ExampleHeader_multiple() {
 	res.Header().Add("Content-Type", "text/html")
 	
 	expect.It(t, res.Result()).To(
-		be.HTTPHeader("Content-Encoding", "gzip"),
-		be.HTTPHeader("Content-Type", "text/html"),
+		behttp.Header("Content-Encoding", "gzip"),
+		behttp.Header("Content-Type", "text/html"),
 	)
 	fmt.Println(t.Result())
 	// Output: Test passed
@@ -72,39 +75,39 @@ func ExampleHeader_multiple_fail() {
 	res.Header().Add("Content-Type", "text/xml")
 	
 	expect.It(t, res.Result()).To(
-		be.HTTPHeader("Content-Encoding", "gzip"),
-		be.HTTPHeader("Content-Type", "text/html"),
+		behttp.Header("Content-Encoding", "gzip"),
+		behttp.Header("Content-Type", "text/html"),
 	)
 	fmt.Println(t.Result())
 	// Output: Test failed: [expected the response to have header "Content-Encoding" of "gzip", but it was "" expected the response to have header "Content-Type" of "text/html", but it was "text/xml"]
 }
 
-func ExampleHaveStatus() {
+func ExampleStatus() {
 	t := &expect.SpyTB{}
 	res := httptest.NewRecorder()
 	res.WriteHeader(http.StatusTeapot)
 	
-	expect.It(t, res.Result()).To(be.HTTPStatus(http.StatusTeapot))
+	expect.It(t, res.Result()).To(behttp.Status(http.StatusTeapot))
 	fmt.Println(t.Result())
 	// Output: Test passed
 }
 
-func ExampleHaveStatus_fail() {
+func ExampleStatus_fail() {
 	t := &expect.SpyTB{}
 	res := httptest.NewRecorder()
 	res.WriteHeader(http.StatusTeapot)
 	
-	expect.It(t, res.Result()).To(be.HTTPStatus(http.StatusNotFound))
+	expect.It(t, res.Result()).To(behttp.Status(http.StatusNotFound))
 	fmt.Println(t.Result())
 	// Output: Test failed: [expected the response to have status of 404, but it was 418]
 }
 
-func ExampleHaveHeader_fail() {
+func ExampleHeader_fail() {
 	t := &expect.SpyTB{}
 	res := httptest.NewRecorder()
 	res.Header().Add("Content-Type", "text/xml")
 	
-	expect.It(t, res.Result()).To(be.HTTPHeader("Content-Type", "text/html"))
+	expect.It(t, res.Result()).To(behttp.Header("Content-Type", "text/html"))
 	fmt.Println(t.Result())
 	// Output: Test failed: [expected the response to have header "Content-Type" of "text/html", but it was "text/xml"]
 }
@@ -117,7 +120,7 @@ func TestHTTPTestMatchers(t *testing.T) {
 			res.Body.WriteString("Hello, world")
 			
 			// see how we can compose matchers together!
-			expect.It(t, res.Result()).To(be.HTTPRespBody(be.String(be.Eq("Hello, world"))))
+			expect.It(t, res.Result()).To(behttp.RespBody(beio.String(be.Eq("Hello, world"))))
 		})
 		
 		t.Run("simple string mismatch", func(t *testing.T) {
@@ -128,7 +131,7 @@ func TestHTTPTestMatchers(t *testing.T) {
 			spytb.VerifyFailingMatcher(
 				t,
 				res.Result(),
-				be.HTTPRespBody(be.String(be.Eq("Goodbye, world"))),
+				behttp.RespBody(beio.String(be.Eq("Goodbye, world"))),
 				`expected the response body to be equal to "Goodbye, world", but it was "Hello, world"`,
 			)
 		})
@@ -140,7 +143,7 @@ func TestHTTPTestMatchers(t *testing.T) {
 			spytb.VerifyFailingMatcher(
 				t,
 				res,
-				be.HTTPRespBody(be.String(be.Eq("Goodbye, world"))),
+				behttp.RespBody(beio.String(be.Eq("Goodbye, world"))),
 				"expected the response body to have data in io.Reader, but it could not be read",
 			)
 		})
@@ -172,7 +175,7 @@ func TestHTTPTestMatchers(t *testing.T) {
 			t.Run("with completed todo", func(t *testing.T) {
 				res := httptest.NewRecorder()
 				res.Body.WriteString(`{"name": "Finish the side project", "completed": true}`)
-				expect.It(t, res.Result()).To(be.HTTPRespBody(be.ParsedJSON[Todo](WithCompletedTODO)))
+				expect.It(t, res.Result()).To(behttp.RespBody(bejson.Parsed[Todo](WithCompletedTODO)))
 			})
 			
 			t.Run("with incomplete todo", func(t *testing.T) {
@@ -182,7 +185,7 @@ func TestHTTPTestMatchers(t *testing.T) {
 				spytb.VerifyFailingMatcher(
 					t,
 					res.Result(),
-					be.HTTPRespBody(be.ParsedJSON[Todo](WithCompletedTODO)),
+					behttp.RespBody(bejson.Parsed[Todo](WithCompletedTODO)),
 					"expected the response body to have a completed todo, but it wasn't complete",
 				)
 			})
@@ -190,7 +193,7 @@ func TestHTTPTestMatchers(t *testing.T) {
 			t.Run("with a todo name", func(t *testing.T) {
 				res := httptest.NewRecorder()
 				res.Body.WriteString(`{"name": "Finish the side project", "completed": false}`)
-				expect.It(t, res.Result()).To(be.HTTPRespBody(be.ParsedJSON[Todo](WithTodoNameOf("Finish the side project"))))
+				expect.It(t, res.Result()).To(behttp.RespBody(bejson.Parsed[Todo](WithTodoNameOf("Finish the side project"))))
 			})
 			
 			t.Run("with incorrect todo name and not completed", func(t *testing.T) {
@@ -200,7 +203,7 @@ func TestHTTPTestMatchers(t *testing.T) {
 				spytb.VerifyFailingMatcher(
 					t,
 					res.Result(),
-					be.HTTPRespBody(be.ParsedJSON[Todo](WithTodoNameOf("Bacon").And(WithCompletedTODO))),
+					behttp.RespBody(bejson.Parsed[Todo](WithTodoNameOf("Bacon").And(WithCompletedTODO))),
 					`expected the response body to have a todo name of "Bacon" and have a completed todo, but it was "Egg" and it wasn't complete`,
 				)
 			})
@@ -212,7 +215,7 @@ func TestHTTPTestMatchers(t *testing.T) {
 				spytb.VerifyFailingMatcher(
 					t,
 					res.Result(),
-					be.HTTPRespBody(be.ParsedJSON[Todo](WithTodoNameOf("Bacon"))),
+					behttp.RespBody(bejson.Parsed[Todo](WithTodoNameOf("Bacon"))),
 					`expected the response body to have a todo name of "Bacon", but it was "Egg"`,
 				)
 			})
@@ -224,9 +227,9 @@ func TestHTTPTestMatchers(t *testing.T) {
 				res.Header().Add("content-type", "application/json")
 				
 				expect.It(t, res.Result()).To(
-					be.HTTPStatus(http.StatusOK),
-					be.ContentTypeJSONHeader,
-					be.HTTPRespBody(be.ParsedJSON[Todo](WithTodoNameOf("Egg").And(be.Not(WithCompletedTODO)))),
+					behttp.Status(http.StatusOK),
+					behttp.ContentTypeJSON,
+					behttp.RespBody(bejson.Parsed[Todo](WithTodoNameOf("Egg").And(be.Not(WithCompletedTODO)))),
 				)
 			})
 			
@@ -237,9 +240,9 @@ func TestHTTPTestMatchers(t *testing.T) {
 				res.Body.WriteString(`{"name": "Egg", "completed": true}`)
 				
 				expect.It(spyTB, res.Result()).To(
-					be.HTTPStatus(http.StatusOK),
-					be.ContentTypeJSONHeader,
-					be.HTTPRespBody(be.ParsedJSON[Todo](WithTodoNameOf("Egg").And(be.Not(WithCompletedTODO)))),
+					behttp.Status(http.StatusOK),
+					behttp.ContentTypeJSON,
+					behttp.RespBody(bejson.Parsed[Todo](WithTodoNameOf("Egg").And(be.Not(WithCompletedTODO)))),
 				)
 				expect.It(t, spyTB).To(spytb.Error(`expected the response body to have a todo name of "Egg" and not have a completed todo`))
 				expect.It(t, spyTB).To(spytb.Error(`expected the response to have header "content-type" of "application/json", but it was ""`))
@@ -247,25 +250,25 @@ func TestHTTPTestMatchers(t *testing.T) {
 		})
 	})
 	
-	t.Run("HTTPStatus code matchers", func(t *testing.T) {
+	t.Run("Status code matchers", func(t *testing.T) {
 		t.Run("OK", func(t *testing.T) {
 			t.Run("positive happy path", func(t *testing.T) {
 				res := httptest.NewRecorder()
 				res.WriteHeader(http.StatusOK)
-				expect.It(t, res.Result()).To(be.HTTPStatus(http.StatusOK))
+				expect.It(t, res.Result()).To(behttp.Status(http.StatusOK))
 			})
 			
 			t.Run("negation on happy path", func(t *testing.T) {
 				res := httptest.NewRecorder()
 				res.WriteHeader(http.StatusTeapot)
-				expect.It(t, res.Result()).To(be.Not(be.HTTPStatus(http.StatusOK)))
+				expect.It(t, res.Result()).To(be.Not(behttp.Status(http.StatusOK)))
 			})
 			
 			t.Run("failure message", func(t *testing.T) {
 				res := httptest.NewRecorder()
 				spyTB := &expect.SpyTB{}
 				res.WriteHeader(http.StatusNotFound)
-				expect.It(spyTB, res.Result()).To(be.HTTPStatus(http.StatusOK))
+				expect.It(spyTB, res.Result()).To(behttp.Status(http.StatusOK))
 				expect.It(t, spyTB).To(spytb.Error(`expected the response to have status of 200, but it was 404`))
 			})
 		})
@@ -273,19 +276,19 @@ func TestHTTPTestMatchers(t *testing.T) {
 		t.Run("user defined status", func(t *testing.T) {
 			res := httptest.NewRecorder()
 			res.WriteHeader(http.StatusTeapot)
-			expect.It(t, res.Result()).To(be.HTTPStatus(http.StatusTeapot))
+			expect.It(t, res.Result()).To(behttp.Status(http.StatusTeapot))
 		})
 	})
 	
-	t.Run("HTTPHeader matchers", func(t *testing.T) {
+	t.Run("Header matchers", func(t *testing.T) {
 		t.Run("happy path multiple headers", func(t *testing.T) {
 			res := httptest.NewRecorder()
 			res.Header().Add("Content-Encoding", "gzip")
 			res.Header().Add("Content-Type", "text/html")
 			
 			expect.It(t, res.Result()).To(
-				be.HTTPHeader("Content-Encoding", "gzip"),
-				be.HTTPHeader("Content-Type", "text/html"),
+				behttp.Header("Content-Encoding", "gzip"),
+				behttp.Header("Content-Type", "text/html"),
 			)
 		})
 		
@@ -295,8 +298,8 @@ func TestHTTPTestMatchers(t *testing.T) {
 			res.Header().Add("Content-Type", "text/xml")
 			
 			expect.It(spyTB, res.Result()).To(
-				be.HTTPHeader("Content-Encoding", "gzip"),
-				be.HTTPHeader("Content-Type", "text/html"),
+				behttp.Header("Content-Encoding", "gzip"),
+				behttp.Header("Content-Type", "text/html"),
 			)
 			expect.It(t, spyTB).To(
 				spytb.Error(`expected the response to have header "Content-Encoding" of "gzip", but it was ""`),

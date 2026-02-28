@@ -1,4 +1,4 @@
-package be_test
+package befs_test
 
 import (
 	"fmt"
@@ -8,6 +8,7 @@ import (
 	
 	"github.com/jsteenb2/expect"
 	"github.com/jsteenb2/expect/be"
+	"github.com/jsteenb2/expect/be/befs"
 	"github.com/jsteenb2/expect/spytb"
 )
 
@@ -19,7 +20,7 @@ func ExampleFileNamed_fail() {
 		},
 	}
 	
-	expect.It[fs.FS](t, stubFS).To(be.FileNamed("someFile.txt", be.Substring("Pluto")))
+	expect.It[fs.FS](t, stubFS).To(befs.FileNamed("someFile.txt", be.Substring("Pluto")))
 	
 	fmt.Println(t.Result())
 	// Output: Test failed: [expected file called someFile.txt to contain "Pluto"]
@@ -33,7 +34,7 @@ func ExampleFileNamed() {
 		},
 	}
 	
-	expect.It[fs.FS](t, stubFS).To(be.FileNamed("someFile.txt"))
+	expect.It[fs.FS](t, stubFS).To(befs.FileNamed("someFile.txt"))
 	
 	fmt.Println(t.Result())
 	// Output: Test passed
@@ -47,7 +48,7 @@ func ExampleDir() {
 		},
 	}
 	
-	expect.It[fs.FS](t, stubFS).To(be.Dir("someDir"))
+	expect.It[fs.FS](t, stubFS).To(befs.Dir("someDir"))
 	
 	fmt.Println(t.Result())
 	// Output: Test passed
@@ -61,7 +62,7 @@ func ExampleDir_fail() {
 		},
 	}
 	
-	expect.It[fs.FS](t, stubFS).To(be.Dir("someFile.txt"))
+	expect.It[fs.FS](t, stubFS).To(befs.Dir("someFile.txt"))
 	
 	fmt.Println(t.Result())
 	// Output: Test failed: [expected file system to have directory called "someFile.txt", but it was not a directory]
@@ -82,20 +83,20 @@ func TestFSMatching(t *testing.T) {
 	
 	t.Run("HasDir", func(t *testing.T) {
 		t.Run("passing", func(t *testing.T) {
-			expect.It[fs.FS](t, stubFS).To(be.Dir("someDir"))
+			expect.It[fs.FS](t, stubFS).To(befs.Dir("someDir"))
 		})
 		
 		t.Run("failing", func(t *testing.T) {
 			spytb.VerifyFailingMatcher[fs.FS](
 				t,
 				stubFS,
-				be.Dir("someFile.txt"),
+				befs.Dir("someFile.txt"),
 				`expected file system to have directory called "someFile.txt", but it was not a directory`,
 			)
 			spytb.VerifyFailingMatcher[fs.FS](
 				t,
 				stubFS,
-				be.Dir("non-existent-file"),
+				befs.Dir("non-existent-file"),
 				`expected file system to have directory called "non-existent-file", but it did not`,
 			)
 			t.Run("failing filesystem", func(t *testing.T) {
@@ -103,7 +104,7 @@ func TestFSMatching(t *testing.T) {
 				spytb.VerifyFailingMatcher[fs.FS](
 					t,
 					failingFS,
-					be.Dir("someDir"),
+					befs.Dir("someDir"),
 					`expected file system to have directory called "someDir", but it could not be read`,
 				)
 			})
@@ -113,14 +114,14 @@ func TestFSMatching(t *testing.T) {
 	t.Run("FileContains", func(t *testing.T) {
 		t.Run("file existence check", func(t *testing.T) {
 			t.Run("passing", func(t *testing.T) {
-				expect.It[fs.FS](t, stubFS).To(be.FileNamed("someFile.txt"))
-				expect.It[fs.FS](t, stubFS).To(be.FileNamed("nested/someFile.txt"))
+				expect.It[fs.FS](t, stubFS).To(befs.FileNamed("someFile.txt"))
+				expect.It[fs.FS](t, stubFS).To(befs.FileNamed("nested/someFile.txt"))
 			})
 			t.Run("failing", func(t *testing.T) {
 				spytb.VerifyFailingMatcher[fs.FS](
 					t,
 					stubFS,
-					be.FileNamed("non-existent-file"),
+					befs.FileNamed("non-existent-file"),
 					`expected file system to have file called non-existent-file, but it did not`,
 				)
 			})
@@ -129,14 +130,14 @@ func TestFSMatching(t *testing.T) {
 	
 	t.Run("FileContains with contents", func(t *testing.T) {
 		t.Run("passing", func(t *testing.T) {
-			expect.It[fs.FS](t, stubFS).To(be.FileNamed("someFile.txt", be.Substring("world")))
+			expect.It[fs.FS](t, stubFS).To(befs.FileNamed("someFile.txt", be.Substring("world")))
 		})
 		
 		t.Run("failing", func(t *testing.T) {
 			spytb.VerifyFailingMatcher[fs.FS](
 				t,
 				stubFS,
-				be.FileNamed("someFile.txt", be.Substring("goodbye")),
+				befs.FileNamed("someFile.txt", be.Substring("goodbye")),
 				`expected file called someFile.txt to contain "goodbye"`,
 			)
 			
@@ -145,7 +146,7 @@ func TestFSMatching(t *testing.T) {
 				spytb.VerifyFailingMatcher[fs.FS](
 					t,
 					failingFS,
-					be.FileNamed("anotherFile.txt", be.Substring("BLAH")),
+					befs.FileNamed("anotherFile.txt", be.Substring("BLAH")),
 					"expected file system to have file called anotherFile.txt, but it could not be read",
 				)
 			})

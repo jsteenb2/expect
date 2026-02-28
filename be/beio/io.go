@@ -1,4 +1,4 @@
-package be
+package beio
 
 import (
 	"bytes"

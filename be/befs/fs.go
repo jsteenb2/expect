@@ -1,4 +1,4 @@
-package be
+package befs
 
 import (
 	"fmt"
