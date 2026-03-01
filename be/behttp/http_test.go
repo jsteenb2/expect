@@ -245,7 +245,7 @@ func TestHTTPTestMatchers(t *testing.T) {
 					behttp.RespBody(bejson.Parsed[Todo](WithTodoNameOf("Egg").And(be.Not(WithCompletedTODO)))),
 				)
 				expect.It(t, spyTB).To(spytb.Error(`expected the response body to have a todo name of "Egg" and not have a completed todo`))
-				expect.It(t, spyTB).To(spytb.Error(`expected the response to have header "content-type" of "application/json", but it was ""`))
+				expect.It(t, spyTB).To(spytb.Error(`expected the response to have header "Content-Type" of "application/json", but it was ""`))
 			})
 		})
 	})

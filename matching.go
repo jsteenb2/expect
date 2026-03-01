@@ -65,7 +65,7 @@ func (e Inspector[T]) To(matchers ...Matcher[T]) {
 }
 
 func calculateSubjectName[T any](e Inspector[T]) string {
-	var subjectName = fmt.Sprintf("%v", e.Subject)
+	var subjectName = fmt.Sprintf("%+v", e.Subject)
 	
 	if str, isStringer := any(e.Subject).(fmt.Stringer); isStringer {
 		subjectName = str.String()
