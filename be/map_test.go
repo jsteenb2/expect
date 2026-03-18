@@ -13,8 +13,8 @@ func ExampleWithAnyValue() {
 	t := &expect.SpyTB{}
 	
 	expect.It(t, map[string]string{"hello": "world"}).To(be.Key("goodbye", be.WithAnyValue[string]()))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected map[hello:world] to have key goodbye, but it did not]
 }
 
@@ -22,8 +22,8 @@ func ExampleKey_fail() {
 	t := &expect.SpyTB{}
 	
 	expect.It(t, map[string]int{"score": 4}).To(be.Key("score", be.Greater(5).And(be.Less(10))))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected map[score:4] to have key score with value be greater than 5 and be less than 10, but it was 4]
 }
 

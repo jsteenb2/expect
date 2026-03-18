@@ -13,8 +13,8 @@ func ExampleAllCaps() {
 	t := &expect.SpyTB{}
 	
 	expect.It(t, "HELLO").To(be.AllCaps)
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -22,8 +22,8 @@ func ExampleAllCaps_fail() {
 	t := &expect.SpyTB{}
 	
 	expect.It(t, "hello").To(be.AllCaps)
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected hello to in all caps, but it was not in all caps]
 }
 
@@ -31,8 +31,8 @@ func ExampleLen() {
 	t := &expect.SpyTB{}
 	
 	expect.It(t, "hello").To(be.Len(be.Eq(5)))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -40,8 +40,8 @@ func ExampleLen_fail() {
 	t := &expect.SpyTB{}
 	
 	expect.It(t, "hello").To(be.Len(be.Eq(4)))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected hello to have length be equal to 4, but it was 5]
 }
 
@@ -49,8 +49,8 @@ func ExampleSubstring() {
 	t := &expect.SpyTB{}
 	
 	expect.It(t, "hello").To(be.Substring("ell"))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -58,8 +58,8 @@ func ExampleSubstring_fail() {
 	t := &expect.SpyTB{}
 	
 	expect.It(t, "hello").To(be.Substring("goodbye"))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected hello to contain "goodbye"]
 }
 
@@ -72,8 +72,8 @@ func Example() {
 		be.Substring("ell"),
 		be.Not(be.AllCaps),
 	)
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 func TestStringMatchers(t *testing.T) {

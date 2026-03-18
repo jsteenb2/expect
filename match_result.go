@@ -1,6 +1,9 @@
 package expect
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // MatchResult describes the result of a match against a "subject".
 type MatchResult struct {
@@ -8,13 +11,25 @@ type MatchResult struct {
 	Matches     bool
 	But         string
 	SubjectName string
+	StackTrace  []string
 }
 
 func (m MatchResult) Error() string {
+	var sb strings.Builder
 	if m.But != "" {
-		return fmt.Sprintf("expected %+v to %+v, but %s", m.SubjectName, m.Description, m.But)
+		sb.WriteString(fmt.Sprintf("expected %+v to %+v, but %s", m.SubjectName, m.Description, m.But))
+	} else {
+		sb.WriteString(fmt.Sprintf("expected %+v to %+v", m.SubjectName, m.Description))
 	}
-	return fmt.Sprintf("expected %+v to %+v", m.SubjectName, m.Description)
+	if len(m.StackTrace) > 0 {
+		sb.WriteString("\nError Trace:\n")
+		for _, trace := range m.StackTrace {
+			sb.WriteString("\t")
+			sb.WriteString(trace)
+			sb.WriteString("\n")
+		}
+	}
+	return sb.String()
 }
 
 // Zero returns true if the MatchResult is the zero value.

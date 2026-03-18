@@ -12,42 +12,42 @@ import (
 func ExampleEq() {
 	t := &expect.SpyTB{}
 	expect.It(t, 5).To(be.Eq(5))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
 func ExampleEq_fail() {
 	t := &expect.SpyTB{}
 	expect.It(t, 5).To(be.Eq(4))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected 5 to be equal to 4, but it was 5]
 }
 
 func ExampleGreater() {
 	t := &expect.SpyTB{}
 	expect.It(t, 5).To(be.Greater(4))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
 func ExampleGreater_fail() {
 	t := &expect.SpyTB{}
 	expect.It(t, 5).To(be.Greater(6))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected 5 to be greater than 6, but it was 5]
 }
 
 func ExampleLess() {
 	t := &expect.SpyTB{}
 	expect.It(t, 5).To(be.Less(6))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
 func ExampleLess_fail() {
 	t := &expect.SpyTB{}
 	expect.It(t, 5).To(be.Less(4))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected 5 to be less than 4, but it was 5]
 }
 
