@@ -274,10 +274,6 @@ t := &SpyTB{}
 This is a test spy that is used to verify the output of the matches made. The examples call `LastError()` to see what
 test output would happen, so you can see what the failures look like.
 
-Finally, I have worked through my course [Learn Go with Tests](https://quii.gitbook.io/learn-go-with-tests), using
-`expect` to write assertions, so you can find more
-examples [at the Github repository](https://github.com/quii/learn-go-with-pepper)
-
 ## Trade-offs and optimisations
 
 ### Type-safety

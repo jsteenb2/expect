@@ -9,6 +9,7 @@ import (
 	"github.com/jsteenb2/expect"
 	"github.com/jsteenb2/expect/be"
 	"github.com/jsteenb2/expect/be/befs"
+	"github.com/jsteenb2/expect/be/beio"
 	"github.com/jsteenb2/expect/spytb"
 )
 
@@ -20,10 +21,10 @@ func ExampleFileNamed_fail() {
 		},
 	}
 	
-	expect.It[fs.FS](t, stubFS).To(befs.FileNamed("someFile.txt", be.Substring("Pluto")))
+	expect.It[fs.FS](t, stubFS).To(befs.FileNamed("someFile.txt", beio.String(be.Substring("Pluto"))))
 
 	fmt.Printf("%s\n", t)
-	// Output: Test failed: [expected file called someFile.txt to contain "Pluto"]
+	// Output: Test failed: [expected file called "someFile.txt" to contain "Pluto", but while the file existed, the contents did not match]
 }
 
 func ExampleFileNamed() {
@@ -122,7 +123,7 @@ func TestFSMatching(t *testing.T) {
 					t,
 					stubFS,
 					befs.FileNamed("non-existent-file"),
-					`expected file system to have file called non-existent-file, but it did not`,
+					`expected file system to have file called "non-existent-file", but it did not`,
 				)
 			})
 		})
@@ -130,15 +131,15 @@ func TestFSMatching(t *testing.T) {
 	
 	t.Run("FileContains with contents", func(t *testing.T) {
 		t.Run("passing", func(t *testing.T) {
-			expect.It[fs.FS](t, stubFS).To(befs.FileNamed("someFile.txt", be.Substring("world")))
+			expect.It[fs.FS](t, stubFS).To(befs.FileNamed("someFile.txt", beio.String(be.Substring("world"))))
 		})
 		
 		t.Run("failing", func(t *testing.T) {
 			spytb.VerifyFailingMatcher[fs.FS](
 				t,
 				stubFS,
-				befs.FileNamed("someFile.txt", be.Substring("goodbye")),
-				`expected file called someFile.txt to contain "goodbye"`,
+				befs.FileNamed("someFile.txt", beio.String(be.Substring("goodbye"))),
+				`expected file called "someFile.txt" to contain "goodbye"`,
 			)
 			
 			t.Run("failing filesystem", func(t *testing.T) {
@@ -146,8 +147,8 @@ func TestFSMatching(t *testing.T) {
 				spytb.VerifyFailingMatcher[fs.FS](
 					t,
 					failingFS,
-					befs.FileNamed("anotherFile.txt", be.Substring("BLAH")),
-					"expected file system to have file called anotherFile.txt, but it could not be read",
+					befs.FileNamed("anotherFile.txt", beio.String(be.Substring("BLAH"))),
+					`expected file called "anotherFile.txt" to have data in io.Reader, but it could not be read`,
 				)
 			})
 		})
