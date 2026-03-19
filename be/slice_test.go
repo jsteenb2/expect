@@ -14,8 +14,8 @@ func ExampleShallowEq() {
 	
 	anArray := []string{"hello", "world"}
 	expect.It(t, anArray).To(be.ShallowEq([]string{"hello", "world"}))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -24,8 +24,8 @@ func ExampleShallowEq_fail() {
 	
 	anArray := []string{"hello", "world"}
 	expect.It(t, anArray).To(be.ShallowEq([]string{"goodbye", "world"}))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected [hello world] to be equal to [goodbye world]]
 }
 
@@ -34,8 +34,8 @@ func ExampleContainingItem() {
 	
 	anArray := []string{"HELLO", "WORLD"}
 	expect.It(t, anArray).To(be.ContainingItem(be.AllCaps))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -44,8 +44,8 @@ func ExampleContainingItem_fail() {
 	
 	anArray := []string{"hello", "world"}
 	expect.It(t, anArray).To(be.ContainingItem(be.AllCaps))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected [hello world] to contain an item in all caps, but it did not]
 }
 
@@ -54,8 +54,8 @@ func ExampleSize() {
 	
 	anArray := []string{"hello", "world"}
 	expect.It(t, anArray).To(be.Size[string](be.Eq(2)))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -64,8 +64,8 @@ func ExampleSize_fail() {
 	
 	anArray := []string{"hello", "world"}
 	expect.It(t, anArray).To(be.Size[string](be.Eq(3)))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected [hello world] to have a size be equal to 3, but it was 2]
 }
 
@@ -74,8 +74,8 @@ func ExampleEveryItem() {
 	
 	anArray := []string{"hello", "world"}
 	expect.It(t, anArray).To(be.EveryItem(be.Substring("o")))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -84,8 +84,8 @@ func ExampleEveryItem_fail() {
 	
 	anArray := []string{"hello", "world"}
 	expect.It(t, anArray).To(be.EveryItem(be.Substring("h")))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected [hello world] to have every item contain "h"]
 }
 

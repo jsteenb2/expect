@@ -1,7 +1,66 @@
 # `expect`
 
 THIS PACKAGE IS forked from `github.com/quii/pepper`, as an experiment to play with
-the naming of the pkg names to aid in readability/dev ux.
+the naming of the pkg names to aid in readability/dev ux. The be pkgs have been
+renamed to improve modularity and reduce imports. The big takeaways from this
+fork are:
+
+1. No more `"."` imports. Rather we rely on package name to provide context.
+2. Adds stack traces that respect `t.Helper` akin to [github.com/stretchr/testify](https://github.com/stretchr/testify) and friends
+   * note, the error stack trace comes _after_ the failure message, moving the most important information to the top of the failure
+3. Extend behttp with request builder to simplify creating http request. This was largely borrowed from [github.com/jsteenb2/testttp](https://github.com/jsteenb2/testttp)
+4. Provide extensible pattern for creating new assertions with `beMyDomain` sort of setup.
+   * Ex) I have a `behtml` which has helpers for working with html responses. A simple list of the pkg helpers providing expressiveness at the call site. Preview it with the following code blocks:
+```go
+package behtml
+
+// RespDoc converts http response into a queryable document, fataling when not possible.
+func RespDoc(t *testing.T, body *http.Response) *goquery.Document
+
+// ContentType matches the content type of text/html.
+func ContentType() expect.Matcher[*http.Response]
+
+// ContainsTextAt provides an xpath traversal to find text containing the desired input somewhere within the matching elements tree of nodes.
+func ContainsTextAt(xpath, want string) expect.Matcher[*goquery.Document]
+
+// TextAt provides an xpath traversal to find an exact text match for the desired input somewhere within the matching elements tree of nodes.
+func TextAt(xpath, want string) expect.Matcher[*goquery.Document]
+```
+
+```go
+package somehtmlserver_test
+
+func TestHelloWorld(t *testing.T) {
+	resp := behttp.
+		Get("/hello").
+		Queries("name", "world").
+		Do(testmux.Mux())
+	
+	expect.It(t, resp).To(behttp.StatusOK().And(behtml.ContentType()))
+	
+	doc := behtml.RespDoc(t, resp)
+	hasHead(t, doc)
+	expect.It(t, doc).To(
+		behtml.TextAt("div", "Hello, world thre"),
+		behtml.TextAt("div:nth-child(2)", "That's all folks"),
+		behtml.ContainsTextAt("div", "Hello,"),
+	)
+}
+
+// hasHead is reusable across all pages produced by the test mux.
+func hasHead(t *testing.T, doc *goquery.Document) {
+	t.Helper()
+	
+	expect.It(t, doc).To(
+		hasTitle("test hello"),
+		hasAuthor("berg"),
+		hasDescription("Testing Templ"),
+		hasCharsetUTF8,
+        hasViewport,
+	)
+}
+```
+   
 
 ## _Type-safe_, composable, extensible test matching for Go
 
@@ -142,15 +201,15 @@ func TestTodos(t *testing.T) {
 		res.Header().Add("content-type", "application/json")
 
 		expect.It(t, res.Result()).To(
-			be.HTTPStatus(http.StatusOK),
-			be.ContentTypeJSONHeader,
-			be.HTTPRespBody(be.ParsedJSON[Todo](WithTodoNameOf("Egg").And(be.Not(WithCompletedTODO)))),
+			behttp.Status(http.StatusOK),
+			behttp.ContentTypeJSON,
+			behttp.RespBody(bejson.Parsed(WithTodoNameOf("Egg").And(be.Not(WithCompletedTODO)))),
 		)
 	})
 }
 ```
 
-Note how we can compose built-in matchers like `HTTPStatus`, `ContentTypeJSONHeader` and `Not`, with the custom-built
+Note how we can compose built-in matchers like `Status`, `ContentTypeJSON` and `Not`, with the custom-built
 matchers to easily write very expressive tests that fail with very clear error messages. `expect` makes it **really easy**
 to check JSON responses of your HTTP handlers.
 
@@ -173,7 +232,7 @@ Computer, I already know that true is not equal to false. What was not false? Wh
 t.Run("failure message", func (t *testing.T) {
 	res := httptest.NewRecorder()
 	res.WriteHeader(http.StatusNotFound)
-	expect.It(t, res.Result()).To(be.HttpStatus(http.StatusOK))
+	expect.It(t, res.Result()).To(behttp.Status(http.StatusOK))
 })
 ```
 
@@ -190,7 +249,7 @@ Embracing this approach with well-written matchers means you get readable test f
 
 `expect` brings the following to the table
 
-- ✅ Type-safe tests. No `interface{}`
+- ✅ Type-safe tests. No `any`
 - ✅ Composition to reduce boilerplate
 - ✅ Clear test output as a first-class citizen
 - ✅ A "standard library" of matchers to let you quickly write expressive tests for common scenarios out of the box
@@ -235,7 +294,7 @@ brittle.
 
 Due to the compositional nature of the library though, you _should_ be able to leverage existing matchers for re-use.
 For example, you'll never have to make a matcher that parses JSON, you should instead
-use [ParsedJSON](https://pkg.go.dev/github.com/jsteenb2/expect/be#example-ParsedJSON) in combination with a matcher of your
+use [bejson.Parsed](https://pkg.go.dev/github.com/jsteenb2/expect/be/bejson#example-ParsedJSON) in combination with a matcher of your
 type.
 
 Due to Go having some constraints on _where_ you can use generics, such as function types not being allowed to have type
@@ -248,7 +307,7 @@ Matchers should be designed with composition in mind. For instance, let's take a
 response:
 
 ```go
-func HTTPResponseBody(bodyMatchers expect.Matcher[io.Reader]) expect.Matcher[*http.Response]
+func ResponseBody(bodyMatchers expect.Matcher[io.Reader]) expect.Matcher[*http.Response]
 ```
 
 This allows the user to re-use `io.Reader` matchers that are already defined, compose them with `And`/`Or`/`Not`, and of

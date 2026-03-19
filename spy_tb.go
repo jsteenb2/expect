@@ -1,6 +1,10 @@
 package expect
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 // SpyTB is a test helper that records calls to Error. This lets us create tests and examples to demonstrate what happens when a test fails.
 type SpyTB struct {
@@ -36,4 +40,41 @@ func (s *SpyTB) Fatalf(format string, args ...any) {
 
 func (s *SpyTB) Reset() {
 	s.ErrorCalls = nil
+}
+
+func (s *SpyTB) Format(f fmt.State, verb rune) {
+	switch verb {
+	case 'q', 's':
+		if len(s.ErrorCalls) == 0 {
+			fmt.Fprint(f, "Test passed")
+			return
+		}
+		for i := range s.ErrorCalls {
+			s.ErrorCalls[i] = stripStackTrace(s.ErrorCalls[i])
+			if verb == 'q' {
+				s.ErrorCalls[i] = strconv.Quote(s.ErrorCalls[i])
+			}
+		}
+		fmt.Fprintf(f, "Test failed: %v", s.ErrorCalls)
+	case 'v':
+		if f.Flag('#') {
+			fmt.Fprintf(f, "%#v", s.ErrorCalls)
+			return
+		}
+		if len(s.ErrorCalls) == 0 {
+			fmt.Fprint(f, "Test passed")
+			return
+		}
+		fmt.Fprintf(f, "Test failed: %v", s.ErrorCalls)
+	default:
+		fmt.Fprint(f, s.Result())
+	}
+}
+
+func stripStackTrace(err string) string {
+	idx := strings.Index(err, "Error Trace:")
+	if idx == -1 {
+		return err
+	}
+	return strings.TrimSpace(err[:idx])
 }

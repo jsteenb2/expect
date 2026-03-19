@@ -22,7 +22,7 @@ func ExampleContainingByte() {
 	expect.It[io.Reader](t, buf).To(beio.HaveData(
 		beio.ContainingByte([]byte("hello")).And(beio.ContainingByte([]byte("world"))),
 	))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -36,7 +36,7 @@ func ExampleContainingByte_fail() {
 	expect.It[io.Reader](t, buf).To(beio.HaveData(
 		beio.ContainingByte([]byte("goodbye")),
 	))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected the reader to contain "goodbye", but it didn't have "goodbye"]
 }
 
@@ -50,7 +50,7 @@ func ExampleContainingString() {
 	expect.It[io.Reader](t, buf).To(beio.HaveData(
 		beio.ContainingString("world"),
 	))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -64,7 +64,7 @@ func ExampleContainingString_fail() {
 	expect.It[io.Reader](t, buf).To(beio.HaveData(
 		beio.ContainingString("goodbye"),
 	))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected the reader to contain "goodbye", but it was "helloworld"]
 }
 
@@ -75,7 +75,7 @@ func ExampleString() {
 	buf.WriteString("hello")
 	buf.WriteString("world")
 	expect.It[io.Reader](t, buf).To(beio.String(be.Eq("helloworld")))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -85,7 +85,7 @@ func ExampleString_fail() {
 	buf.WriteString("hello")
 	buf.WriteString("world")
 	expect.It[io.Reader](t, buf).To(beio.String(be.Eq("Poo")))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected "helloworld" to be equal to "Poo", but it was "helloworld"]
 }
 

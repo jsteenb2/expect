@@ -21,8 +21,8 @@ func ExampleFileNamed_fail() {
 	}
 	
 	expect.It[fs.FS](t, stubFS).To(befs.FileNamed("someFile.txt", be.Substring("Pluto")))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected file called someFile.txt to contain "Pluto"]
 }
 
@@ -35,8 +35,8 @@ func ExampleFileNamed() {
 	}
 	
 	expect.It[fs.FS](t, stubFS).To(befs.FileNamed("someFile.txt"))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -49,8 +49,8 @@ func ExampleDir() {
 	}
 	
 	expect.It[fs.FS](t, stubFS).To(befs.Dir("someDir"))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -63,8 +63,8 @@ func ExampleDir_fail() {
 	}
 	
 	expect.It[fs.FS](t, stubFS).To(befs.Dir("someFile.txt"))
-	
-	fmt.Println(t.Result())
+
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected file system to have directory called "someFile.txt", but it was not a directory]
 }
 

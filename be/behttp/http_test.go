@@ -21,7 +21,7 @@ func ExampleRespBody() {
 	res.Body.WriteString("Hello, world")
 	
 	expect.It(t, res.Result()).To(behttp.RespBody(beio.String(be.Eq("Hello, world"))))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -31,7 +31,7 @@ func ExampleRespBody_fail() {
 	res.Body.WriteString("Hello, world")
 	
 	expect.It(t, res.Result()).To(behttp.RespBody(beio.String(be.Eq("Goodbye, world"))))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected the response body to be equal to "Goodbye, world", but it was "Hello, world"]
 }
 
@@ -41,7 +41,7 @@ func ExampleHeader() {
 	res.Header().Add("Content-Type", "text/html")
 	
 	expect.It(t, res.Result()).To(behttp.Header("Content-Type", "text/html"))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -51,7 +51,7 @@ func ExampleContentTypeJSON() {
 	res.Header().Add("Content-Type", "application/json")
 	
 	expect.It(t, res.Result()).To(behttp.ContentTypeJSON)
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -65,7 +65,7 @@ func ExampleHeader_multiple() {
 		behttp.Header("Content-Encoding", "gzip"),
 		behttp.Header("Content-Type", "text/html"),
 	)
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -78,7 +78,7 @@ func ExampleHeader_multiple_fail() {
 		behttp.Header("Content-Encoding", "gzip"),
 		behttp.Header("Content-Type", "text/html"),
 	)
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected the response to have header "Content-Encoding" of "gzip", but it was "" expected the response to have header "Content-Type" of "text/html", but it was "text/xml"]
 }
 
@@ -88,7 +88,7 @@ func ExampleStatus() {
 	res.WriteHeader(http.StatusTeapot)
 	
 	expect.It(t, res.Result()).To(behttp.Status(http.StatusTeapot))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test passed
 }
 
@@ -98,7 +98,7 @@ func ExampleStatus_fail() {
 	res.WriteHeader(http.StatusTeapot)
 	
 	expect.It(t, res.Result()).To(behttp.Status(http.StatusNotFound))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected the response to have status of 404, but it was 418]
 }
 
@@ -108,7 +108,7 @@ func ExampleHeader_fail() {
 	res.Header().Add("Content-Type", "text/xml")
 	
 	expect.It(t, res.Result()).To(behttp.Header("Content-Type", "text/html"))
-	fmt.Println(t.Result())
+	fmt.Printf("%s\n", t)
 	// Output: Test failed: [expected the response to have header "Content-Type" of "text/html", but it was "text/xml"]
 }
 
