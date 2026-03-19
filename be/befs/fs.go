@@ -11,13 +11,12 @@ import (
 const fsSubjectName = "file system"
 
 // FileNamed checks if a file exists in the file system, and can run additional matchers on its contents.
-func FileNamed(name string, contentMatcher ...expect.Matcher[string]) expect.Matcher[fs.FS] {
+func FileNamed(name string, contentMatcher ...expect.Matcher[io.Reader]) expect.Matcher[fs.FS] {
 	return func(fileSystem fs.FS) expect.MatchResult {
 		file, err := fileSystem.Open(name)
-		
 		if err != nil {
 			return expect.MatchResult{
-				Description: "have file called " + name,
+				Description: fmt.Sprintf("have file called %q", name),
 				Matches:     false,
 				But:         "it did not",
 				SubjectName: fsSubjectName,
@@ -27,27 +26,20 @@ func FileNamed(name string, contentMatcher ...expect.Matcher[string]) expect.Mat
 		defer file.Close()
 		
 		if len(contentMatcher) > 0 {
-			all, err := io.ReadAll(file)
-			if err != nil {
-				return expect.MatchResult{
-					Description: "have file called " + name,
-					Matches:     false,
-					But:         "it could not be read",
-					SubjectName: fsSubjectName,
-				}
-			}
-			contents := string(all)
 			for _, matcher := range contentMatcher {
-				result := matcher(contents)
-				result.SubjectName = "file called " + name
+				result := matcher(file)
+				result.SubjectName = fmt.Sprintf("file called %q", name)
 				if !result.Matches {
+					if result.But == "" {
+						result.But = "while the file existed, the contents did not match"
+					}
 					return result
 				}
 			}
 		}
 		
 		return expect.MatchResult{
-			Description: "have file called " + name,
+			Description: fmt.Sprintf("have file called %q", name),
 			Matches:     true,
 			SubjectName: fsSubjectName,
 		}

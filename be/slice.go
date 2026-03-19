@@ -63,9 +63,15 @@ func EveryItem[T any](m expect.Matcher[T]) expect.Matcher[[]T] {
 // ShallowEq checks if two slices are equal, only works with slices of comparable types.
 func ShallowEq[T comparable](other []T) expect.Matcher[[]T] {
 	return func(ts []T) expect.MatchResult {
+		equal := slices.Equal(ts, other)
+		but := ""
+		if !equal {
+			but = "the slice is not equal"
+		}
 		return expect.MatchResult{
-			Matches:     slices.Equal(ts, other),
+			Matches:     equal,
 			Description: fmt.Sprintf("be equal to %v", other),
+			But:         but,
 		}
 	}
 }

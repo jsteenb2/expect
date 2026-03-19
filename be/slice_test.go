@@ -26,7 +26,7 @@ func ExampleShallowEq_fail() {
 	expect.It(t, anArray).To(be.ShallowEq([]string{"goodbye", "world"}))
 
 	fmt.Printf("%s\n", t)
-	// Output: Test failed: [expected [hello world] to be equal to [goodbye world]]
+	// Output: Test failed: [expected [hello world] to be equal to [goodbye world], but the slice is not equal]
 }
 
 func ExampleContainingItem() {
